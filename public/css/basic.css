@@ -1,0 +1,131 @@
+/**
+ * Peppered defaults/reset (screen)
+ * 
+ * @author LzzL
+ * @last-updated 2009-01-21
+ * 
+ */
+
+/**
+ * strip margin & padding
+ * img's not included (support h/vspace)
+ */
+body,
+h1, h2, h3, h4, h5, h6,
+p, blockquote, hr,
+dl, dt, dd, ol, ul, li,
+table, th, td,
+pre,
+form, fieldset, legend, input, select, textarea {
+	margin: 0;
+	padding: 0;
+}
+
+/**
+ * default font styling
+ */
+address, caption, cite, code, del, dfn, em, ins, strong, th, var,
+h1, h2, h3, h4, h5, h6 { 
+	font-style: normal; 
+	font-weight: normal; 
+	font-size: 1em;
+}
+
+/**
+ * list-style
+ */
+ol, ul {
+	list-style: none;
+}
+
+/**
+ * borders
+ */
+fieldset, img, a img,
+abbr, acronym {
+	border: 0;
+}
+
+/**
+ * some defaults. No browser applies other defaults styles than these AFAIK,
+ * but since we're resetting them above, we neede to define them ofcourse
+ */
+del { text-decoration: line-through }
+ins { text-decoration: underline }
+strong { font-weight: bold }
+em, cite { font-style: italic }
+
+/**
+ * q's quotes should by added by UA according to W3C
+ */
+q:before{ content: open-quote }
+q:after	{ content: close-quote } 
+
+abbr[title], acronym[title] { border-bottom: 1px dotted; cursor: help }
+span.abbr, acronym.hasTitle { border-bottom: 1px dotted; cursor: help } /* IE6 wants fresh selector */
+
+
+/**
+ * a
+ */
+a { text-decoration: none }
+a:link, a:visited { cursor: pointer } /* force this for IE */
+
+
+/**
+ * Tables
+ * Tables are tricky:
+ * FF doesnt collapse margins and puts margin, if any, between caption and table itself (caption margin does collapse with table).
+ * Ohter browsers put margin always above table/caption, and do collapse. * 
+ */
+table {
+	table-layout: auto;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+caption, th {
+	text-align: left;
+}
+
+/**
+ * forms
+ */
+legend { white-space: normal; } /* FF3 defaults to nowrap */
+
+label, input { vertical-align: middle; line-height: normal;  }
+
+input, textarea, select {
+	font: inherit;
+	letter-spacing: inherit;
+}
+
+input[type="submit"]::-moz-focus-inner { padding: 0; } /* nice text-alignment in FF possible now, IE6 still needs conditional */
+
+/**
+ * some global classes
+ */
+.noscreen { /* keep aural support */
+	position: absolute!important;
+	top: -999999px!important;
+	left: -999999px!important;
+	font-size: 0!important;
+}
+
+br.noscreen {
+	display: none!important; /* better solution available? */
+}
+
+.hidden,
+.print {
+	display: none!important;
+}
+
+.clr,
+.clear {
+	clear: both!important;
+}
+
+.nowrap {
+	white-space: nowrap!important;
+}
