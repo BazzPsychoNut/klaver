@@ -42,6 +42,7 @@ class Poule extends CI_Model
      */
     public function getOverview()
     {
+    	// TODO build overview array from the matches
         return $this->matches;
     }
     
@@ -69,13 +70,6 @@ class Poule extends CI_Model
         foreach ($query->result_array() as $row) {
             $this->matches[] = new Match($row['match_id']);
         }
-        
-        // display matches
-        foreach ($this->matches as $match)
-        {
-            echo $match->getMatchId().': '.$match->getIdTeam1().' vs '.$match->getIdTeam2()."<br/>\n";
-        }
-        die;
     }
     
 	/**
