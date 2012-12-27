@@ -3,12 +3,12 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<title>Fonteinkerk Klaverjascompetitie</title>
-		<link type="text/css" href="css/basic.css" rel="stylesheet" />
-		<link type="text/css" href="css/klaver.css" rel="stylesheet" />
-		<link type="text/css" href="css/smoothness/jquery-ui-1.8.24.custom.css" rel="stylesheet" />
-		<script type="text/javascript" src="js/jquery-1.8.0.min.js"></script>
-		<script type="text/javascript" src="js/jquery-ui-1.8.24.custom.min.js"></script>
-		<script type="text/javascript" src="js/klaver.js"></script>
+		<link type="text/css" href="<?php echo $this->config->base_url(); ?>css/basic.css" rel="stylesheet" />
+		<link type="text/css" href="<?php echo $this->config->base_url(); ?>css/klaver.css" rel="stylesheet" />
+		<link type="text/css" href="<?php echo $this->config->base_url(); ?>css/smoothness/jquery-ui-1.8.24.custom.css" rel="stylesheet" />
+		<script type="text/javascript" src="<?php echo $this->config->base_url(); ?>js/jquery-1.8.0.min.js"></script>
+		<script type="text/javascript" src="<?php echo $this->config->base_url(); ?>js/jquery-ui-1.8.24.custom.min.js"></script>
+		<script type="text/javascript" src="<?php echo $this->config->base_url(); ?>js/klaver.js"></script>
 	</head>
 	
 	<body>

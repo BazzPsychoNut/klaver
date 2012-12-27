@@ -1,3 +1,4 @@
 RewriteEngine on
+RewriteRule ^(js|css|img)($|/) - [L]
 RewriteCond $1 !^(index\.php|images|robots\.txt|\.css|\.js)
 RewriteRule ^(.*)$ http://localhost/klaver/index.php/$1 [L]

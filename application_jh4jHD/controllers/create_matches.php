@@ -8,16 +8,23 @@ class Create_matches extends CI_Controller
 	    $feedback = array();
 	    $data = array();
 	    
-	    $this->load->model('Poule');
-	    $this->Poule = new Poule();
-	    $this->Poule->init(1); // Poule A
-	    $feedback[] = $this->Poule->createMatches();
-	    $data['poules'][] = $this->Poule->getOverview();
+	    // first truncate to reset the match_ids.
+	    $this->db->truncate('matches');
 	    
-// 	    $this->Poule->init(2); // Poule B
-// 	    $feedback[] = $this->Poule->createMatches();
-// 	    $data['poules'][] = $this->Poule->getOverview();
-// 	    $data['feedback'] = implode("\n", $feedback);
+	    $this->load->model('Poule');
+	    
+	    foreach (array(1, 2) as $pouleId)
+	    {
+	    	// create matches for the poule
+	    	$poule = $this->Poule->init($pouleId); 
+	    	$feedback[] = $poule->createMatches();
+	    	
+	    	// get poule overview view (for visually checking)
+	    	$ovData['overview'] = $poule->getOverview();
+	    	$data['pouleOverview'.$pouleId] = $this->load->view('pouleOverviewView', $ovData, true);
+	    }
+	    
+	    $data['feedback'] = implode("\n", $feedback);
 	    
 	    // render html
 	    $this->load->view('headerView');

@@ -44,7 +44,7 @@ class Match extends CI_Model
     }
     
 	/**
-     * @return field_type $match_id
+     * @return int $match_id
      */
     public function getMatchId()
     {
@@ -52,7 +52,7 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return field_type $round
+     * @return int $round
      */
     public function getRound()
     {
@@ -60,7 +60,7 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return field_type $poule_id
+     * @return int $poule_id
      */
     public function getPouleId()
     {
@@ -68,7 +68,7 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return field_type $scheduled_date
+     * @return date $scheduled_date
      */
     public function getScheduledDate()
     {
@@ -76,7 +76,7 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return field_type $played_date
+     * @return date $played_date
      */
     public function getPlayedDate()
     {
@@ -84,7 +84,7 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return field_type $team1_id
+     * @return int $team1_id
      */
     public function getIdTeam1()
     {
@@ -92,7 +92,7 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return field_type $team2_id
+     * @return int $team2_id
      */
     public function getIdTeam2()
     {
@@ -100,7 +100,7 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return field_type $score_team1
+     * @return int $score_team1
      */
     public function getScoreTeam1()
     {
@@ -108,7 +108,7 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return field_type $score_team2
+     * @return int $score_team2
      */
     public function getScoreTeam2()
     {

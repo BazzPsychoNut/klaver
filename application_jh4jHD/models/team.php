@@ -17,12 +17,15 @@ class Team extends CI_Model
     		  $score;
     
     
-    function __construct()
+    function __construct($team_id = null)
     {
         parent::__construct();
          
         $CI =& get_instance();
         $this->db = $CI->db;
+        
+        if (! empty($team_id))
+        	$this->init($team_id);
     }
 
 

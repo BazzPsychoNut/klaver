@@ -8,8 +8,9 @@
 class Poule extends CI_Model
 {
 	protected $poule_id,
-	          $teams = array(),
-	          $matches = array();  // array of Match objects
+	          $teams = array(),    // array of team_id => array(team_id, name, players)
+	          $matches = array(),  // array of Match objects
+	          $overview;           // overview array of all matches in the poule
 	
 	
 	function __construct()
@@ -32,18 +33,9 @@ class Poule extends CI_Model
         $this->poule_id = $poule_id;
         $this->fetchTeams();
         $this->fetchMatches();
+        $this->createOverview();
         
         return $this;
-    }
-    
-    /**
-     * get array with the current overview data of the poule
-     * @return array
-     */
-    public function getOverview()
-    {
-    	// TODO build overview array from the matches
-        return $this->matches;
     }
     
     /**
@@ -53,10 +45,17 @@ class Poule extends CI_Model
     {
         $this->teams = array(); // first empty
         
-        $sql = "select team_id from teams where poule_id = ?";
+        $sql = "select t.team_id
+				,      t.name 
+        		,      min(p.name) player1
+        		,      max(p.name) player2
+				from   teams t
+				join   players p on t.team_id = p.team_id
+				where  poule_id = ?
+				group by t.team_id, t.name";
         $query = $this->db->query($sql, array((int) $this->poule_id));
         foreach ($query->result_array() as $row) {
-            $this->teams[] = $row['team_id'];
+            $this->teams[$row['team_id']] = $row;
         }
     }
     
@@ -65,6 +64,8 @@ class Poule extends CI_Model
      */
     protected function fetchMatches()
     {
+    	$this->matches = array(); // empty
+    	
         $sql = "select match_id from matches where poule_id = ? order by scheduled_date";
         $query = $this->db->query($sql, array((int) $this->poule_id));
         foreach ($query->result_array() as $row) {
@@ -72,11 +73,40 @@ class Poule extends CI_Model
         }
     }
     
+    /**
+     * create overview array for displaying the matches in the poule
+     * used by view pouleOverviewView.php
+     * @throws Exception
+     */
+    protected function createOverview()
+    {
+    	$this->overview = array();
+    	
+    	if (empty($this->matches) || empty($this->teams))
+    	{
+    		$this->overview = 'Cannot create poule overview: No matches or teams available.';
+    		return;
+    	}
+    	
+    	// the overview array has 2 dimensions:
+    	// rows: rounds with scheduled date
+    	// columns: the matches to play in that round
+    	foreach ($this->matches as $match)
+    	{
+    		$round = $match->getRound().'e ronde. '.format_date($match->getScheduledDate());
+    		$score = $match->getScoreTeam1() > 0 && $match->getScoreTeam2() > 0 ? $match->getScoreTeam1() . ' - ' . $match->getScoreTeam2() : 'nog niet gespeeld';
+    		$this->overview[$round][] = array('team1' => $this->teams[$match->getIdTeam1()],  // array(team_id, name, players)
+    										  'team2' => $this->teams[$match->getIdTeam2()], 
+    										  'score' => $score,
+    										 );
+    	}
+    }
+    
 	/**
      * function to create the matches for the poule and fill the matches table
      * Every 3 weeks a match should be played
      */
-    public function createMatches($startDate = '20121105')
+    public function createMatches($startDate = '20130128')  // startdate is on a monday
     {
         /* dit algoritme creeert een matches schema zoals deze:
            rijen en kolommen zijn de teamnummers, de inhoud zijn de rondes
@@ -91,18 +121,17 @@ class Poule extends CI_Model
         7							x	5
         8								x
         */
-        
+    	
         // het is een competitie, dus elk team tegen elk team
+        $teams = array_keys($this->teams);  // create numeric array of team_ids
         $matches = array();
-        $count = count($this->teams);
+        $count = count($teams);
         for ($i=0; $i<$count; $i++)
         {
-        	$round = (1 + 2*$i) % $count;
+        	$round = (1 + 2*$i) % $count;  // da magic *proud*
             for ($j=$i+1; $j<$count; $j++)
             {
-                $team1 = $this->teams[$i];
-                $team2 = $this->teams[$j];
-                $matches[$team1][$team2] = $round == 0 ? $count : $round;
+                $matches[$teams[$i]][$teams[$j]] = $round == 0 ? $count : $round;
                 $round = ++$round % $count;
             }
         }
@@ -137,6 +166,14 @@ class Poule extends CI_Model
         
         // fetch the created matches into the local array
         $this->fetchMatches();
+        
+        // create the overview of the new matches
+        $this->createOverview();
+    }
+    
+    public function getPouleName()
+    {
+    	return 'Poule '.$this->poule_id;
     }
     
     /**
@@ -162,6 +199,16 @@ class Poule extends CI_Model
     {
         return $this->matches;
     }
+    
+    /**
+     * get array with the current overview data of the poule
+     * @return array
+     */
+    public function getOverview()
+    {
+    	return $this->overview;
+    }
+    
 
 }
 

@@ -71,8 +71,7 @@ class Tests extends CI_Controller
 	    // overview
 	    $overview = $poule->getOverview();
 	    $this->unit->run($overview, 'is_array', 'Poule Overview');
-	    $this->unit->run(count($overview), count($poule->getTeams()) + 1, 'Poule Overview rows');
-	    $this->unit->run(count($overview[0]), count($poule->getTeams()) + 1, 'Poule Overview cols');
+	    $this->unit->run(substr(key($overview), 0, 8), '1e ronde', 'Poule Overview key is round');
 	    
 	    $this->report('Poule unit tests');
 	}

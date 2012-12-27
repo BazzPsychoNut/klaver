@@ -12,18 +12,6 @@
 				</p>
 			</div>
 			
-			<div id="overzicht">
-				<?php foreach ($poules as $poule): ?>
-				<table>
-					<?php foreach ($poule as $r => $row): ?>
-					<tr>
-						<?php foreach ($row as $colname => $val): ?>
-						<td><?php echo $val; ?></td>
-						<?php endforeach; ?>
-					</tr>
-					<?php endforeach; ?>
-				</table>
-				<?php endforeach; ?>
-			</div>
-			
+			<?php echo $pouleOverview1; ?> 
+			<?php echo $pouleOverview2; ?>
 	
