@@ -1,11 +1,31 @@
-body            { font-family:Verdana, Arial, sans-serif; font-size:14px; color:black; background-color:white; }
-h1              { font-size:24px; font-weight:bold; margin-bottom:20px; }
-h2				{ font-size:18px; font-weight:bold; margin-bottom:10px; }
+body            { font-family:Verdana, Arial, sans-serif; font-size:14px; color:#333; background-color:#ddd; }
 p               { margin-bottom:10px; }
-div#container   { width:80%; margin:20px auto; }
+
+/* kopjes */
+h1, h2, h3, h4 	{ font-weight:normal; margin-bottom:0.5em; }
+h1 				{ color:#EE3322; font-size:190%; }
+h2 				{ color:#003D4C; font-size:190%; }
+h3 				{ color:#2C6877; font-size:165%; }
+h4 				{ color:#999933; font-size:100%; }
+
+/* header (copied from intranet) */
+div#header 		{ background-color: #003F78; padding: 10px 20px; z-index: 999; position:relative; }
+#header h1 		{ background:url("../img/logo_wit.png") no-repeat scroll left center transparent; color:#FFFFFF; font-size:3em; height:50px; }
+#header h1 a 	{ color:#FFFFFF; font-weight:normal; padding:20px 0 20px 100px; text-decoration:none; }
+
+/* top menu */
+#top_menu				{ margin-left:104px; }
+#top_menu a 			{ color:white; padding:12px; text-decoration:none; }
+#top_menu li 			{ border-left: 1px solid white; display: inline; list-style: none outside none; margin: 0; padding:10px 0; }
+#top_menu li:hover 		{ background-color: white; }
+#top_menu li:hover a 	{ color: #003F78; }
+
+/* container (copied from intranet) */
+div#container 	{ border-top:0 none; box-shadow:0 0 5px 5px #888888; margin:0 auto; text-align:left; width:960px; background-color:#fff; padding:0; }
+div#content		{ padding:10px 20px 40px; }
 
 /* poule overview */
-div.poule_overview					{ margin-bottom:20px; }
+div.poule_overview					{ margin:40px 0; }
 div.poule_overview table th 		{ border-right:1px solid #ddd; padding:4px; }
 div.poule_overview table td 		{ font-size:10px; padding:2px; }
 div.poule_overview table td.team	{ padding:5px; }
