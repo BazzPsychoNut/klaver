@@ -136,6 +136,50 @@ function to_camel_case($str, $capitalise_first_char = false)
 }
 
 /**
+ * get everything from the haystack between first occurence of strFrom and till last occurence of strTo
+ * 
+ * @param string $haystack
+ * @param string $strFrom
+ * @param string $strTo
+ */
+function str_slice($haystack, $strFrom, $strTo)
+{
+    $firstPos = strpos($haystack, $strFrom);
+    if ($firstPos === false)
+        $firstPos = 0;
+    $lastPos = strrpos($haystack, $strTo);
+    if ($lastPos === false)
+        return substr($haystack, $firstPos);
+    else {
+        $length = $lastPos + strlen($strTo) - $firstPos;
+        return substr($haystack, $firstPos, $length);
+    }
+}
+
+/**
+ * remove everything from the haystack between first occurence of strFrom and till last occurence of strTo
+ *
+ * @param string $haystack
+ * @param string $strFrom
+ * @param string $strTo
+ */
+function str_remove($haystack, $strFrom, $strTo)
+{
+    $firstPos = strpos($haystack, $strFrom);
+    if ($firstPos === false)
+        $firstPos = 0;
+    
+    $return = substr($haystack, 0, $firstPos);
+    
+    $lastPos = strrpos($haystack, $strTo);
+    if ($lastPos !== false && $lastPos > $firstPos) {
+        $return .= substr($haystack, ($lastPos + strlen($strTo)));
+    }
+    
+    return $return;
+}
+
+/**
  * Check of $name gepost is en of het een waarde heeft.
  * Als $value meegeven wordt, check dan of de gepostte waarde daaraan gelijk is.
  *
@@ -152,6 +196,8 @@ function isPosted($name, $value = null)
     {
         if (! empty($value))
             return in_array($value, $_POST[$name]);
+        elseif (count($_POST[$name]) == 1 && isset($_POST[$name][0]) && empty($_POST[$name][0]))
+        	return false;
         else
             return count($_POST[$name]) > 0;
     }
@@ -294,191 +340,7 @@ function makeSwiftEmailArray($email)
 }
 
 
-/**
- * start html page
- *
- * @param boolean $closeHead
- * @return html <head> string
- */
-function htmlHeader($closeHead = true, $jslibrary = 'prototype')
-{
-    ob_start();
-    
-    global $self;
-    $title = basename($self, '.php');
-    
-//  $output  = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"'."\n";
-//	$output .= '   "http://www.w3.org/TR/html4/strict.dtd">'."\n";
-    $output = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
-	$output .= '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
-	$output .= "<head>\n";
-	$output .= '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />'."\n"; // central europe
-	$output .= '	<title>'.$title.'</title>'."\n";
-	if ($jslibrary == 'prototype')
-	{
-    	$output .= '	<script type="text/javascript" src="'.WEB_URL.'js/prototype.js"></script>'."\n";
-    	$output .= '	<script type="text/javascript" src="'.WEB_URL.'js/scripts.js"></script>'."\n";
-    	$output .= '	<script type="text/javascript" src="'.WEB_URL.'js/tablesort.js"></script>'."\n";
-	}
-	elseif ($jslibrary == 'jquery')
-	{
-	    $output .= '    <script type="text/javascript" src="'.WEB_URL.'js/jquery.min.js"></script>'."\n";
-	    $output .= '    <script type="text/javascript" src="'.WEB_URL.'js/marketingweb.js"></script>'."\n";
-	}
-	$output .= '	<script type="text/javascript" src="'.CALENDAR_ROOT.'calendar.js"></script>'."\n";
-	$output .= '	<script type="text/javascript" src="'.CALENDAR_ROOT.'lang/calendar-en.js"></script>'."\n";
-	$output .= '	<script type="text/javascript" src="'.CALENDAR_ROOT.'calendar-setup.js"></script>'."\n";
-	$output .= '	<link type="text/css" rel="stylesheet" href="'.WEB_URL.'css/basic.css" />'."\n";
-	$output .= '	<link type="text/css" rel="stylesheet" href="'.WEB_URL.'css/style.css" />'."\n";
-	$output .= '	<link type="text/css" rel="stylesheet" href="'.CALENDAR_ROOT.'calendar-system.css" />'."\n";
-	
-	if ($closeHead)
-	{
-		$output .= "</head>\n";
-		$output .= "<body>\n";
-	}
-	
-	return $output;
-}
 
-
-function htmlFooter()
-{
-    @ob_end_flush();
-    
-    $output = @getCustomErrors();
-    $output .= "</body>\n";
-    $output .= "</html>\n";
-    return $output;
-}
-
-
-function arrayToTable($array, $options = 'DEFAULT')
-{
-    // fouten afvangen
-    if (empty($array))
-        return false;
-    if (!is_array($array))
-        return false;
-        
-    // mogelijke flags: 'DEFAULT','VERTICAL_HEADERS','EXCEL','NO_TOTALS'
-    if (! is_array($options))
-        $options = explode(",", $options);
-    
-	// initialiseer arrays
-    $columnNames = $totals = array();
-	
-	// zoek eerst row met meeste velden
-	// zodat we zeker geen velden missen
-	$numFields = 0;
-	$columnsRow = 0;
-	foreach ($array as $num => $row)
-	{
-		if (count($row) > $numFields)
-		{
-			$numFields = count($row);
-			$columnsRow = $num;
-		}
-	}
-	
-	$thStyle = in_array('VERTICAL_HEADERS', $options) ? ' style="writing-mode:tb-rl; filter:flipv fliph; vertical-align:bottom;"' : '';
-	
-	// geef array als html table weer
-	$table  = '<table class="result sortable">'."\n";
-	$table .= '  <thead>'."\n";
-	$table .= '    <tr class="tablehead">'."\n";
-	$table .= "      <th>#</th>\n";
-	foreach ($array[$columnsRow] as $head => $val)  // loop door de eerder bepaalde "langste" rij
-	{
-		$table .= '      <th'.$thStyle.'>'.initcap(str_replace('_', ' ', $head)).'</th>'."\n";
-		$columnNames[] = $head;  // maak kolomnamen array
-		$totals[$head] = 0;  // initialiseer totalen array
-	}
-	$table .= '    </tr>'."\n";
-	$table .= '  </thead>'."\n";
-	$table .= '  <tbody>'."\n";
-	
-	$color = '#ffffff';  // hard-coded, zodat het ook in excel goed komt
-	$rowline = 'roweven';
-	$rownum = 1;
-	$too_many_rows = false;
-	$maxRows = in_array('EXCEL', $options) ? 65000 : 1000;
-	foreach ($array as $row)
-	{
-        if ($too_many_rows)
-        {
-            $rownum++;
-        }
-		// We cannot use getRowNum() within this query (apparently), so we just loop through all records
-		elseif ($rownum >= $maxRows)
-		{
-			$too_many_rows = true;
-			$rownum++;
-		}
-		else
-		{
-    	    if (in_array('EXCEL', $options))
-    	    {
-    			$table .= "    <tr>\n";
-    			$table .= '      <td style="background-color:'.$color.'">'.$rownum++."</td>\n";
-    	    }
-    	    else // html
-    	    {
-    			$table .= '    <tr class="'.$rowline.'">'."\n";  // even / oneven
-    			$table .= '      <td>'.$rownum++."</td>\n";
-    	    }
-    		
-    		foreach ($columnNames as $colname)
-    		{
-    		    // Total kolom is grijs
-    		    // voor output naar excel moet de achtergrondkleur per cell opgegeven worden.
-    		    // anders geen stijl, behalve als de waarde numeriek is. Dan rechts uitlijnen.
-    		    if ($colname == 'Total')  // o.a. voor $query->toPivotArray()
-                    $table .= '      <td style="font-weight:bold; background-color:#c8c8c8;';
-    		    elseif (in_array('EXCEL', $options))
-                    $table .= '      <td style="background-color:'.$color.';';
-    		    else
-                    $table .= '      <td style="';
-                    
-    			if (strlen($row[$colname]) == 0)  // afhandelen mogelijke NULLs
-    			    $table .= '"></td>'."\n";
-			    else
-    			{
-        			if (is_numeric($row[$colname]))
-        			{
-        				$table .= ' text-align:right;';  // right align numbers
-        				$totals[$colname] += $row[$colname]; // add value to total
-        			}
-        			$table .= '">'.$row[$colname]."</td>\n";
-    			}
-                    
-    		}
-    		$table .= "    </tr>\n";
-    		
-    		$color = $color == '#ffffff' ? '#dcddde' : '#ffffff';  // change background-color for the next row (excel)
-    		$rowline = $rowline == 'roweven' ? 'rowodd' : 'roweven'; // row class (html)
-		}
-	}
-	$table .= '  </tbody>'."\n";
-        
-    if (! in_array('NO_TOTALS', $options))
-    {
-        $table .= '  <tfoot>'."\n";
-        $table .= '    <tr>'."\n";
-        $table .= '      <td></td>'."\n";  // row number
-        foreach ($columnNames as $colname)
-            $table .= '      <td style="text-align:right; font-weight:bold; background-color:#c8c8c8;">'. (isset($totals[$colname]) ? $totals[$colname] : ' ') . '</td>'."\n";
-        $table .= '      </tr>'."\n";
-        $table .= "  </tfoot>\n";
-    }
-        
-	$table .= '</table>'."\n";
-	
-	if ($too_many_rows)
-		$table .= '<div class="info">Gestopt bij '.$maxRows.' rijen. Er zijn in totaal '.$rownum.' rijen.</div>'."\n";
-		
-	return $table;
-}
 
 /**
  * array left join array2 on (array of) $fields = (array of) $fields
@@ -567,6 +429,25 @@ function arrayToObject($array)
     else {
         return false;
     }
+}
+
+/**
+ * check if given array is numeric
+ * 
+ * @param array $array
+ * @return boolean
+ */
+function array_is_numeric($array)
+{
+    // this is cheaper than return $array === array_values($array)
+    // because it will spot an assoc array immediately and only loop over the array if it is numeric, 
+    // instead of first creating a copy array and then checking the 2 complete arrays
+    foreach ($array as $key => $val)
+    {
+        if (! is_int($key))
+            return false;
+    }
+    return true;
 }
 
 
@@ -764,35 +645,30 @@ function info($msg)
  */
 function dump($var, $return = false)
 {
-    if (empty($var) && $var !== 0)
-        return;
+    if (empty($var))
+        return var_dump($var);
     
     $output = '';
     
     if ($varName = getVarName($var))
         $output .= '<pre><strong>'.$varName.":</strong></pre>\n";
     
-    if (@include_once 'Zend/Debug.php')
+    if (is_object($var))
     {
-        $output .= Zend_Debug::dump($var, null, false);
-    }
-    else
-    {
-        if (is_object($var))
-        {
-            // check if object has own debug methods
-            if (method_exists($var, 'debug'))
-                $output .= $var->debug();
-            elseif (method_exists($var, 'toString'))
-                $output .= $var->toString()."<br/>\n";
-            else
-                $output .= "<pre>".print_r($var, true)."</pre>";
-        }
-        elseif (is_array($var))
-            $output .= "<pre>".print_r($var, true)."</pre>";
+    	// check if object has own debug methods
+        if (method_exists($var, 'debug'))
+        	$output .= $var->debug();
+        elseif (method_exists($var, 'toString'))
+        	$output .= $var->toString()."<br/>\n";
+        elseif (method_exists($var, '__toString'))
+        	$output .= $var->__toString()."<br/>\n";
         else
-            $output .= $var."<br/>\n";
+        	$output .= "<pre>".print_r($var, true)."</pre>";
     }
+    elseif (is_array($var))
+    	$output .= "<pre>".print_r($var, true)."</pre>";
+    else
+    	$output .= $var."<br/>\n";
     
     if ($_SERVER['SERVER_NAME'] == 'localhost') // working locally
         $output .= stacktrace();
@@ -827,7 +703,7 @@ function stacktrace()
             else
                 $pars[] = trim(getVarName($arg).' '.xsschars($arg));
         }
-        $output[] = "[$i] => ".$line['file'].' at line '.$line['line'].' using function <strong>'.$function.'('.implode(', ', $pars).')</strong>';
+        $output[] = str_pad("[$i]", 4, " ", STR_PAD_LEFT). " => ".(! empty($line['file']) ? $line['file'] : '').' at line '.(! empty($line['line']) ? $line['line'] : '').' using function <strong>'.$function.'('.implode(', ', $pars).')</strong>';
     }
     
     return '<pre><strong>stacktrace: </strong>'."\n".implode("\n", $output).'</pre>'."\n";
@@ -926,6 +802,17 @@ function initcap($string)
 }
 
 /**
+ * custom function for checking if needle exists in haystack. This saves me the trouble of checking with !== false everywhere
+ * @param string $haystack
+ * @param string $needle
+ * @return boolean
+ */
+function instr($haystack, $needle)
+{
+	return strpos($haystack, $needle) !== false;
+}
+
+/**
  * get array of all files in the given directory and it's subdirectories
  * You can filter the output by extension
  * 
@@ -957,5 +844,39 @@ function getFiles($dir, $extension = null)
 
     return array_values($files);
 }
+
+
+/**
+ * Copy attributes that are in both $from and $to from $from into $to
+ * Handy for sibling objects (like the Input children)
+ * This acts like an object cast in Java: Car car = (Car) Volvo;
+ * @param object $to
+ * @param object $from
+ * @param array $excludes array of properties to exclude from copying
+ */
+function copySharedAttributes(&$to, $from, $excludes = array())
+{
+    if (! is_object($to) && ! is_object($from))
+        return false;
+    
+    // get the attributes of both objects and loop through all attributes that exist in both objects
+    $rf = new ReflectionObject($from);
+    $rt = new ReflectionObject($to);
+    foreach ($rf->getProperties() as $propFrom) 
+    {
+        $propFrom->setAccessible(true);
+        $name = $propFrom->getName();
+        $value = $propFrom->getValue($from);
+        
+        if ($rt->hasProperty($name) && ! in_array($name, $excludes))
+        {
+            $propTo = $rt->getProperty($name);
+            $propTo->setAccessible(true);
+            $propTo->setValue($to, $value);
+        }
+    }
+}
+
+
 
 

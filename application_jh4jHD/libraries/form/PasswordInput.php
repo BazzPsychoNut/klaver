@@ -3,7 +3,7 @@
 require_once 'Input.php';
 
 
-class TextInput extends Input
+class PasswordInput extends Input
 {
     
     protected $maxLength;
@@ -19,7 +19,7 @@ class TextInput extends Input
             if (! $this->validate->isValid())
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
                 
-            $output = $this->getLabel().'<input type="text"'.$this->getId().$this->getClass().$this->getName().$this->getValue().$this->getStyle().$this->getDisabled().$this->getMaxLength().$this->getTitle().$this->getOnchange().$this->getOnclick().' />'."\n";
+            $output = $this->getLabel().'<input type="password"'.$this->getId().$this->getClass().$this->getName().' value=""'.$this->getStyle().$this->getDisabled().$this->getMaxLength().$this->getTitle().$this->getOnchange().$this->getOnclick().' />'."\n";
             
             if ($echo)
                 echo $output;

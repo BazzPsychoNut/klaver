@@ -1,6 +1,6 @@
 <?php
 
-require_once 'form/Input.php';
+require_once 'Input.php';
 
 
 class HiddenInput extends Input
@@ -17,11 +17,8 @@ class HiddenInput extends Input
             // default validity check
             if (! $this->validate->isValid())
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
-                
-            $value = ! empty($this->selected) ? $this->selected : $this->value;
-            $disabled  = ! empty($this->disabled) ? ' '.$this->disabled.'="'.$this->disabled.'"' : '';
-                
-            $output = '<input type="hidden" id="'.$this->id.'" class="'.$this->class.'" name="'.$this->name.'" value="'.$value.'" style="'.$this->style.'"'.$disabled.' title="'.$this->title.'" />'."\n";
+
+            $output = '<input type="hidden"'.$this->getId().$this->getClass().$this->getName().$this->getValue().$this->getStyle().$this->getDisabled().$this->getTitle().$this->getOnchange().' />'."\n";
             
             if ($echo)
                 echo $output;

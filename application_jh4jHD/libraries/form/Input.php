@@ -4,7 +4,6 @@ require_once 'functions.php';
 require_once 'FormError.php';
 require_once 'Validate.php';
 
-
 /**
  * Abstract class for input classes
  * Only render() _has_ to be different for each concrete class. The rest can be inherited.
@@ -13,12 +12,13 @@ require_once 'Validate.php';
  */
 abstract class Input
 {
-    protected $id,
-              $name,
+    protected $name,
+              $label,
+              $id,
               $value,
               $values = array(),
-              $label,
               $labels = array(),
+              $categories,
               $width,
               $classes = array(),
               $title,
@@ -29,12 +29,16 @@ abstract class Input
               $hidden,
               $onclick,
               $onchange,
-              $inReportForm = false;
+              $size, // File Input doesn't support style="width" and Dropdown also uses it
+              $inReportForm = false,
+              $required; // boolean value to tell if the input element is required (and a red star should be displayed in the label)
+    
     
     protected $validate; // Validate object
     
     // bitwise flags
     const INPUT_OVERRULE_POST = 1; // make the given selected value overwrite anything that is posted
+    const INPUT_SELECTED_INITIALLY_ONLY = 2; // only use an initial "selected" value if nothing has been posted yet
     // next const should be 2, then 4, then 8 etc. to have the nth bit set to 1
 
     /**
@@ -66,6 +70,7 @@ abstract class Input
      * @return html
      */
     abstract public function render();
+    
     
     /**
      * @return attributes in readable format
@@ -103,13 +108,24 @@ abstract class Input
      */
     public function getId()
     {
-        return $this->id;
+        return ' id="'.$this->id.'"';
     }
 
-	/**
+    /**
+     * @param  string $array '[]' or null
      * @return string $name
      */
-    public function getName()
+    public function getName($array = null)
+    {
+        $name = $array == '[]' && strpos($this->name, '[]') === false ? $this->name.'[]' : $this->name;
+        return ' name="'.$name.'"';
+    }
+    
+    /**
+     * return only the name attribute
+     * @return string $name
+     */
+    public function name()
     {
         return $this->name;
     }
@@ -119,7 +135,8 @@ abstract class Input
      */
     public function getValue()
     {
-        return $this->value;
+        $value = ! empty($this->selected) ? $this->selected : $this->value;
+        return ! empty($value) ? ' value="'.$value.'"' : null;
     }
 
 	/**
@@ -134,6 +151,19 @@ abstract class Input
      * @return string $label
      */
     public function getLabel()
+    {
+    	if (empty($this->label) || $this->inReportForm)
+    		return null;
+    		
+   		//return '<label for="'.$this->id.'">'.$this->label.($this->required ? ' <span class="required">*</span>' : '').'</label> ';
+   		return '<label for="'.$this->id.'">'.$this->label.'</label> ';
+    }
+    
+    /**
+     * return only the label attribute
+     * @return string $label
+     */
+    public function label()
     {
         return $this->label;
     }
@@ -159,7 +189,7 @@ abstract class Input
      */
     public function getClass()
     {
-        return implode(' ', $this->classes);
+        return ! empty($this->classes) ? ' class="'.implode(' ', $this->classes).'"' : null;
     }
     
     /**
@@ -175,7 +205,7 @@ abstract class Input
      */
     public function getStyle()
     {
-        return implode('; ', $this->styles).';';
+        return ! empty($this->styles) ? ' style="'.implode('; ', $this->styles).';"' : null;
     }
     
     /**
@@ -208,7 +238,7 @@ abstract class Input
      */
     public function getDisabled()
     {
-        return $this->disabled;
+        return ! empty($this->disabled) ? ' '.$this->disabled.'="'.$this->disabled.'"' : null;
     }
     
     /**
@@ -232,7 +262,7 @@ abstract class Input
      */
     public function getTitle()
     {
-        return $this->title;
+        return ! empty($this->title) ? ' title="'.$this->title.'"' : null;
     }
     
     /**
@@ -240,7 +270,7 @@ abstract class Input
      */
     public function getOnclick()
     {
-        return $this->onclick;
+        return ! empty($this->onclick) ? ' onclick="'.$this->onclick.'"' : null;
     }
     
     /**
@@ -248,8 +278,17 @@ abstract class Input
      */
     public function getOnchange()
     {
-        return $this->onchange;
+        return ! empty($this->onchange) ? ' onchange="'.$this->onchange.'"' : null;
     }
+    
+    /**
+     * @return the $size
+     */
+    public function getSize()
+    {
+        return ! empty($this->size) ? ' size="'.$this->size.'"' : null;
+    }
+    
     
     
 
@@ -341,14 +380,17 @@ abstract class Input
     }
     
 	/**
-     * append single option
+     * Append individual option <option value="$value">$option</option>
      * @param string $value
      * @param string $label
+     * @param optional string $category
      */
-    public function appendOption($value, $label)
+	public function appendOption($value, $label, $category = null)
     {
         $this->values[] = xsschars($value);
         $this->labels[] = xsschars($label);
+        if (! empty($category))
+            $this->categories[] = $category;
         
         return $this;
     }
@@ -375,14 +417,19 @@ abstract class Input
     }
     
     /**
-     * prepend single option
+     * Prepend individual option <option value="$value">$option</option>
      * @param string $value
      * @param string $label
+     * @param optional string $category
      */
-    public function prependOption($value, $label)
+	public function prependOption($value, $label, $category = null)
     {
-        array_unshift($this->values, xsschars($value));
-        array_unshift($this->labels, xsschars($label));
+        // prepend values to array (Yes, this will set all other numeric keys 1 higher)
+        array_unshift($this->values, $value);
+        array_unshift($this->labels, $label);
+        
+        if (! empty($category))
+            array_unshift($this->categories, $category);
         
         return $this;
     }
@@ -410,21 +457,42 @@ abstract class Input
     }
     
     /**
-     * use $query object to populate values list
+     * use $query object to populate options list
      * @param Query $query
+     * @param string $valueColumn
+     * @param string $labelColumn
+     * @param string $categoryColumn
      */
-    public function appendOptionsFromQuery(Query $query, $valueColumn='VALUE', $labelColumn='LABEL')
+    public function appendOptionsFromQuery(Query $query, $valueColumn = 'VALUE', $labelColumn = 'OPTION', $categoryColumn = null)
     {
         if ($this->validate->isQuery($query)) // validate and execute $query
         {
-            // empty the arrays we are going to fill
-            foreach ($query->fetchAll() as $row)
-            {
-                $this->values[] = isset($row[strtoupper($valueColumn)]) ? $row[strtoupper($valueColumn)] : null;
-                $this->labels[] = isset($row[strtoupper($labelColumn)]) ? $row[strtoupper($labelColumn)] : null;
+		    $result = $query->fetchAll();
+			if ( count($result) > 0 ) 
+			{
+				foreach ($result as $row)
+				{
+					$this->appendOption( isset($row[strtoupper($valueColumn)]) ? $row[strtoupper($valueColumn)] : null,
+										 isset($row[strtoupper($labelColumn)]) ? $row[strtoupper($labelColumn)] : null,
+										 (! empty($categoryColumn) && isset($row[strtoupper($categoryColumn)])) ? $row[strtoupper($categoryColumn)] : null
+									   );
+				}
             }
         }
         
+        return $this;
+    }
+    
+    /**
+     * @param array $categories
+     */
+    public function setCategories($categories)
+    {
+        if ($this->validate->isArray($categories))
+        {
+            $this->categories = array_values($categories); // enforce numeric array
+        }
+    
         return $this;
     }
 
@@ -456,7 +524,7 @@ abstract class Input
     public function setClass($classes)
     {
         if (! is_array($classes))
-            $classes = (array) $classes;
+            $classes = explode(' ', trim($classes));
         
         foreach ($classes as $class)
         {
@@ -503,7 +571,7 @@ abstract class Input
     public function setStyle($styles)
     {
         if (! is_array($styles))
-            $styles = (array) $styles;
+            $styles = explode('; ', trim($styles));
 
         // use addStyle to keep the logic in one function
         $this->styles = array();
@@ -538,13 +606,19 @@ abstract class Input
     }
     
 	/**
-     * @param $selected the $selected to set
+	 * Set an initial value for the input field
+     * @param string $selected
+     * @param int $flag
      */
     public function setSelected($selected, $flag = 0)
     {
         if (empty($this->posted) || $this->isFlagSet($flag, self::INPUT_OVERRULE_POST))
         {
-            $this->selected = $selected;
+            // of flag is niet geset of wel geset maar dan moet POST empty zijn
+            if (! $this->isFlagSet($flag, self::INPUT_SELECTED_INITIALLY_ONLY) || empty($_POST))
+            {
+                $this->selected = $selected;
+            }
         }
         
         return $this;
@@ -556,10 +630,21 @@ abstract class Input
      */
     protected function setPosted()
     {
-        if (isset($_POST[$this->name]) && ! empty($_POST[$this->name]))
+        if (! empty($_POST[$this->name]))
         {
-            $this->posted = xsschars($_POST[$this->name]);
-            $this->selected = xsschars($_POST[$this->name]);  // so we can always retrieve the selected fields with getSelected()
+            $post = $_POST[$this->name];
+            if (is_array($post)) 
+                array_walk($post, 'xsschars');
+            else
+                $post = xsschars($post);
+            
+            $this->posted = $post;
+            $this->selected = $post;  // so we can always retrieve the selected fields with getSelected()
+        }
+        elseif (! empty($_FILES[$this->name]))
+        {
+            $this->posted = $_FILES[$this->name];
+            $this->selected = $_FILES[$this->name];
         }
         
         return $this;
@@ -631,6 +716,19 @@ abstract class Input
         return $this;
     }
     
+    /**
+     * @param int $size
+     */
+    public function setSize($size)
+    {
+        if ($this->validate->numeric($size))
+        {
+            $this->size = $size;
+        }
+        
+        return $this;
+    }
+    
 	/**
 	 * indicator to let Input know if it's in the ReportForm class or not (needed to display labels or not)
      * @param bool $bool
@@ -644,6 +742,30 @@ abstract class Input
         
         return $this;
     }
+    
+	/**
+	 * @return boolean $required
+	 */
+	public function getRequired() 
+	{
+		return $this->required;
+	}
+
+	/**
+	 * @param bolean $required
+	 */
+	public function setRequired($required = true) 
+	{
+		if ($this->validate->isBoolean($required))
+		{
+			$this->required = $required;
+			if ($required)
+				$this->addClass('required');
+			else
+				$this->removeClass('required');
+		}
+	}
+
 
 
     

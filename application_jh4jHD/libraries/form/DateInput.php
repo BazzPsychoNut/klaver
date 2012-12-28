@@ -1,6 +1,6 @@
 <?php
 
-require_once 'form/Input.php';
+require_once 'TextInput.php';
 
 
 class DateInput extends Input
@@ -11,7 +11,7 @@ class DateInput extends Input
      */
     public function render($echo = false)
     {
-        try
+        try 
         {
             $output = '';
             
@@ -19,21 +19,23 @@ class DateInput extends Input
             if (! $this->validate->isValid())
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
                 
-            $value     = ! empty($this->selected) ? $this->selected : $this->value;
-            $disabled  = ! empty($this->disabled) ? ' '.$this->disabled.'="'.$this->disabled.'"' : '';
-            if (! empty($this->width))
-                $this->style .= ' width:'.$this->width.'px;';
-
-            // we sill show/hide the container div for the text field and the image
-            $hidden    = $this->getHidden() === true ? ' style="display:none;"' : '';
+            // we sill show/hide the container div for the text field and the image and not the text field and the image themselves
+            $this->removeStyle('display:none');
+            $hidden = $this->getHidden() === true ? ' style="display:none;"' : '';
             
-            // start output
-            if (! empty($this->label) && ! $this->inReportForm)
-                $output .= '<label for="'.$this->id.'">'.$this->label.'</label> ';
-                
+            // create TextInput object with all same properties as this DateInput object
+            $text = new TextInput($this->name);
+            copySharedAttributes($text, $this);
+            $text->setMaxLength(10);
+            $text->setWidth(80);
+            
             // no new line between input field and the image so there will be no space interpreted by the browser
-            $output .= '<span id="'.$this->id.'-container" '.$hidden.'><input type="text" id="'.$this->id.'" class="'.$this->class.'" name="'.$this->name.'" value="'.$value.'" size="10" style="'.$this->style.'" '.$disabled.' title="'.$this->title.'" /><img class="date-button" id="button-'.$this->id.'" src="'.IMAGE_ROOT.'calendar.gif" height="28" style="vertical-align:-85%;" onmouseover="this.style.cursor=\'pointer\';" onmouseout="this.style.cursor=\'auto\';" />'."\n";
-            $output .= "</span>\n";
+            if (! defined('IMAGE_ROOT'))
+                define('IMAGE_ROOT', 'http://marketingweb.itservices.lan/images/');
+            $output = '<span id="'.$this->id.'-container"'.$hidden.'>'
+                    . $text->render()
+                    . '<img class="date-button" id="button-'.$this->id.'" src="'.IMAGE_ROOT.'calendar.gif" height="28" style="vertical-align:-85%;" onmouseover="this.style.cursor=\'pointer\';" onmouseout="this.style.cursor=\'auto\';" />'
+                    . "</span>\n";
             if (empty($this->disabled))
             {
 	            $output .= '<script type="text/javascript">

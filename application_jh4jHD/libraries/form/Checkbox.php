@@ -1,6 +1,6 @@
 <?php
 
-require_once 'form/Input.php';
+require_once 'Input.php';
 
 
 class Checkbox extends Input
@@ -27,13 +27,6 @@ class Checkbox extends Input
             
             // I will assume style adjustments apply to the container div if there are more
             // checkboxes and that it will apply to the checkbox if there is only one.
-            if ($this->getHidden() === true)
-                $this->style .= ' display:none;';
-            if (! empty($this->width))
-                $this->style .= ' width:'.$this->width.'px;';
-                
-            $disabled  = ! empty($this->disabled) ? ' '.$this->disabled.'="'.$this->disabled.'"' : '';
-            $onclick   = ! empty($this->onclick) ? ' onclick="'.$this->onclick.'"' : null;
                             
             // if it is a collection of checkboxes the property "values" is filled, otherwise the property "value"
             if (! empty($this->values))
@@ -48,28 +41,36 @@ class Checkbox extends Input
                         $selectedValues = array($this->selected);
                 }
     		    
-    		    if ($this->orientation == 'VERTICAL')
-    		    {
-    		        $this->setRenderInColumns(1);
-    		    }
-    		    if (! empty($this->renderInColumns))
+                if (! empty($this->renderInColumns))
     		    {
     		        $rowsPerColumn = ceil(count($this->values) / $this->renderInColumns);
     		    }
     		    
     		    $columns = array(); // array to collect the values per column in
+    		    $classesAtStart = $this->classes;
 		        foreach ($this->values as $i => $value)
 		        {
-		            $checked = in_array($value, $selectedValues) ? ' checked="checked" ' : '';
+		            $checked = in_array($value, $selectedValues) ? ' checked="checked"' : '';
 		            $id = $this->id.'-'.$this->toValidHtmlId($value);
 		            
-    		        $checkbox = '<input type="checkbox" id="'.$id.'" class="'.$this->class.'" name="'.$this->name.'[]" value="'.$value.'" title="'.$this->title.'"'.$checked.$disabled.$onclick.'/>'."\n";
-                    if (! empty($this->labels[$i]))
+		            // add category class if it exists
+		            if (isset($this->categories[$i]))
+		            {
+		                $this->addClass(str_replace(' ', '', $this->categories[$i]));
+		            }
+		            
+		            $checkbox = '<input type="checkbox" id="'.$id.'"'.$this->getClass().$this->getName('[]').' value="'.$value.'"'.$checked.$this->getDisabled().$this->getTitle().$this->getOnclick().' />'."\n";
+                    if (isset($this->labels[$i])) // I also want to display 0
                     {
                         $checkbox .= '<label for="'.$id.'">'.$this->labels[$i].'</label>'."\n";
                     }
                     
-                    if (! empty($this->renderInColumns))
+                    // render in columns per category, per given columns number, or don't render in columns
+                    if (! empty($this->categories[$i]))
+                    {
+                        $columns[$this->categories[$i]][] = $checkbox;
+                    }
+                    elseif (! empty($this->renderInColumns))
                     {
                         $columns[floor($i / $rowsPerColumn)][] = $checkbox;
                     }
@@ -77,29 +78,52 @@ class Checkbox extends Input
                     {
                         $output .= $checkbox;
                     }
+                    
+                    // reset classes, so the last entry doesn't have all category classes :)
+                    $this->classes = $classesAtStart;
 		        }
 		        
 		        if (! empty($columns))
 		        {
 		            // recreate the $output
 		            $output = '<table><tr>';
-		            foreach ($columns as $col)
+		            $colcount = 0;
+		            foreach ($columns as $key => $col)
 		            {
 		                $output .= '<td valign="top">';
+		                if (! empty($this->categories)) 
+		                {
+		                    $categoryId = str_replace(' ', '', $key);
+		                    $output .= '<input type="checkbox" class="'.$this->name.'-category" name="'.$categoryId.'" id="'.$categoryId.'"><label for="'.$categoryId.'" style="font-weight:bold;">'.$key."</label></strong><br/>\n";
+		                }
+		                
 		                foreach ($col as $checkbox)
 		                {
 		                    $output .= $checkbox."<br/>\n";
 		                }
 		                $output .= '</td>';
+		                
+		                // go to new table row if the number of columns set in renderInColumns is reached. Add empty td for spacing.
+		                if (! empty($this->categories) && ! empty($this->renderInColumns) && ++$colcount % $this->renderInColumns == 0)
+		                    $output .= '</tr><tr><td colspan="'.$this->renderInColumns.'" style="padding-top:10px;"></td></tr><tr>'."\n";
 		            }
 		            $output .= '</tr></table>'."\n";
+		            
+		            // add js for the category checkboxes
+		            if (! empty($this->categories)) 
+		            {
+    		            $output .= '<script type="text/javascript">
+                            		// category checkbox: check all underlying checkboxes when a category name is clicked
+                                    $("input.'.$this->name.'-category").click(function() {
+                                        var classname = $(this).attr("name");
+                                        var bool = $(this).is(":checked");
+                                        $("."+classname).attr("checked", bool);
+                                    });
+    	                            </script>'."\n";
+		            }
 		        }
 		        
-		        if (! empty($this->label) && ! $this->inReportForm)
-                {
-                    $output = '<label for="'.$this->id.'">'.$this->label.'</label>'."\n".$output;
-                }
-		        $output = '<div id="'.$this->id.'-container" style="'.$this->style.'">'."\n".$output."</div>\n";
+		        $output = $this->getLabel().'<div id="'.$this->id.'-container"'.$this->getStyle().'>'."\n".$output."</div>\n";
             }
             else // single checkbox
             {
@@ -112,13 +136,13 @@ class Checkbox extends Input
                 
     		    $checked = $this->value == $this->selected ? ' checked="checked" ' : '';
 			
-                $output .= '<input type="checkbox" id="'.$this->id.'" class="'.$this->class.'" name="'.$this->name.'" value="'.$this->value.'" style="'.$this->style.'" title="'.$this->title.'"'.$checked.$disabled.$onclick.'/>'."\n";
+    		    $output = '<input type="checkbox"'.$this->getId().$this->getClass().$this->getName().$this->getValue().$checked.$this->getStyle().$this->getDisabled().$this->getTitle().$this->getOnchange().$this->getOnclick().' />'."\n";
                 if (! empty($this->label))
                 {
                     $output .= '<label for="'.$this->id.'">'.$this->label.'</label>'."\n";
                 }
                 
-                $output = '<div id="'.$this->id.'-container" style="'.$this->style.'">'."\n".$output."</div>\n";
+                $output = '<div id="'.$this->id.'-container"'.$this->getStyle().'>'."\n".$output."</div>\n";
             }
             
             // when posting, also send a hidden field so that if none of the options are selected
@@ -158,6 +182,8 @@ class Checkbox extends Input
                 
             $this->selected = $selected;
         }
+        
+        return $this;
     }
     
     /**
@@ -176,6 +202,8 @@ class Checkbox extends Input
             $this->posted = $posted;
             $this->selected = $posted;  // so we can always retrieve the selected fields with getSelected()
         }
+        
+        return $this;
     }
     
     /**
@@ -188,6 +216,8 @@ class Checkbox extends Input
         {
             $this->renderInColumns = $int;
         }
+        
+        return $this;
     }
     
     /**
@@ -199,7 +229,14 @@ class Checkbox extends Input
         if ($this->validate->inArray($orientation, array('HORIZONTAL','VERTICAL')))
         {
             $this->orientation = $orientation;
+            
+            if ($this->orientation == 'VERTICAL')
+                $this->setRenderInColumns(1);
+            else
+                $this->setRenderInColumns(0);
         }
+        
+        return $this;
     }
     
     /**
@@ -221,5 +258,3 @@ class Checkbox extends Input
     
 }
 
-
-?>

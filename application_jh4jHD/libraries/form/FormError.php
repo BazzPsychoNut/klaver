@@ -16,34 +16,13 @@ class FormError
     
     public static function dump($message)
     {
-        // forward to CampaignError's error handling if possible
-        if (class_exists('CampaignError'))
-        {
-            CampaignError::dump($message);
-        }
-        else
-        {
-            global $self;
-            
-            // log error
-            if (! self::workingLocally())
-            {
-                require_once 'Query.php';
-	            $sqlErrorLog = "insert into dm.web_errorlog
-	                            (report_filename, error_level, error_message, post_values, user_login_id)
-	                            values
-	                            (substr(:report_filename,1,200), :error_level, substr(:error_message,1,4000), :post_values, :user_login_id)";
-	            $queryErrorLog = new Query($sqlErrorLog);
-	            $queryErrorLog->bind( array(':report_filename', ':error_level', ':error_message', ':post_values', ':user_login_id')
-	                                , array($self, 3, $message, implode(',', $_POST), USERID)
-	                                );
-	            @$queryErrorLog->execute();
-            }
-            
-            // display error on screen
-            if (self::workingLocally() || self::$showErrors)
-                return $message;
-        }
+		// log error, but don't log when developing or testing
+		if (! self::workingLocally() && strpos($_SERVER['PHP_SELF'], '/tests/') === false)
+			file_put_contents('form_errorlog.txt', $message."\n".stacktrace()."\n", FILE_APPEND);
+		
+		// display error on screen when developing or testing
+		if (self::workingLocally() || self::$showErrors || strpos($_SERVER['PHP_SELF'], '/tests/') !== false)
+			return $message;
     }
     
     /**
@@ -51,7 +30,7 @@ class FormError
      */
     protected static function workingLocally()
     {
-        return $_SERVER['SERVER_NAME'] == 'localhost';
+        return ! empty($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] == 'localhost';
     }
 }
 

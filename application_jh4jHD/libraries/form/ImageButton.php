@@ -1,12 +1,13 @@
 <?php
 
-require_once 'form/Input.php';
+require_once 'Input.php';
 
 
 class ImageButton extends Input
 {
     
-    protected $src;
+    protected $src,
+              $alt;
 
     /**
      * render the hidden input element
@@ -16,21 +17,11 @@ class ImageButton extends Input
         try
         {
             // default validity check
+            $this->validate->isNotEmpty($this->src);
             if (! $this->validate->isValid())
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
                 
-            if ($this->getHidden() === true)
-                $this->style .= ' display:none;';
-            if (! empty($this->width))
-                $this->style .= ' width:'.$this->width.'px;';
-                                
-            $output = '';
-            if (! empty($this->label) && ! $this->inReportForm)
-                $output .= '<label for="'.$this->id.'">'.$this->label.'</label> ';
-                
-            $disabled  = ! empty($this->disabled) ? ' '.$this->disabled.'="'.$this->disabled.'"' : '';
-                
-            $output .= '<input type="image" src="'.$this->src.'" id="'.$this->id.'" class="'.$this->class.'" name="'.$this->name.'" value="'.$this->value.'" style="'.$this->style.'"'.$disabled.' title="'.$this->title.'" />'."\n";
+            $output = $this->getLabel().'<input type="image"'.$this->getSrc().$this->getAlt().$this->getId().$this->getClass().$this->getName().$this->getValue().$this->getStyle().$this->getTitle().$this->getOnclick().' />'."\n";
             
             if ($echo)
                 echo $output;
@@ -48,7 +39,7 @@ class ImageButton extends Input
      */
     public function getSrc()
     {
-        return $this->src;
+        return ' src="'.$this->src.'"';
     }
 
 	/**
@@ -60,7 +51,28 @@ class ImageButton extends Input
         {
             $this->src = $src;
         }
+        
+        return $this;
     }
+    
+	/**
+     * @return string $alt
+     */
+    public function getAlt()
+    {
+        return ' alt="'.$this->alt.'"';
+    }
+
+	/**
+     * @param string $alt
+     */
+    public function setAlt($alt)
+    {
+        $this->alt = $alt;
+        
+        return $this;
+    }
+
 
     
     

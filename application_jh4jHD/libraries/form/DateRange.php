@@ -1,7 +1,6 @@
 <?php
 
-require_once 'form/DateInput.php';
-require_once 'form/FormError.php';
+require_once 'DateInput.php';
 
 /**
  * Create 2 date input fields for selecting a date range
@@ -13,8 +12,6 @@ class DateRange extends Input
     // the 2 date objects
     protected $dateFrom,
     		  $dateTo;
-    
-    protected $validate;
     
     
     /**
@@ -41,11 +38,11 @@ class DateRange extends Input
                 throw new Exception($this->validate->getMessage('Error creating '.get_class($this).' object with name '.$this->name));
             
             // create the two date input fields
-            $this->setDateFrom(new DateInput($name.'-from', $from));
-            $this->setDateTo(new DateInput($name.'-to', $to));
+            $this->setDateFrom(new DateInput($this->name.'-from', $from));
+            $this->setDateTo(new DateInput($this->name.'-to', $to));
             
             // set default labels
-            $this->setLabels(array('Between','and'));
+            $this->setLabels(array('Between', 'and'));
         }
         catch (Exception $e)
         {
@@ -63,11 +60,13 @@ class DateRange extends Input
             // default validity check
             if (! $this->validate->isValid())
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
+            
+            // via casting we can pass all attributes that were set on DateRane down to the DateInput fields
+            copySharedAttributes($this->dateFrom, $this, array('name','id','value','label','selected','posted'));
+            copySharedAttributes($this->dateTo, $this, array('name','id','value','label','selected','posted'));
                 
             // render the date range input fields
-            $output = '';
-            $output .= $this->dateFrom->render();
-            $output .= $this->dateTo->render();
+            $output = $this->dateFrom->render() . $this->dateTo->render();
             
             if ($echo)
                 echo $output;
@@ -91,8 +90,17 @@ class DateRange extends Input
         $this->dateTo->setLabel($labels[1]);
     }
     
+    /**
+     * get the labels of the dates
+     * @return array (from, to)
+     */
+    public function getLabels()
+    {
+        return array($this->dateFrom->label, $this->dateTo->label);
+    }
+    
 	/**
-     * @return the $dateFrom
+     * @return DateInput $dateFrom
      */
     public function getDateFrom()
     {
@@ -100,7 +108,7 @@ class DateRange extends Input
     }
 
 	/**
-     * @return the $dateTo
+     * @return DateInput $dateTo
      */
     public function getDateTo()
     {
@@ -116,6 +124,8 @@ class DateRange extends Input
         {
             $this->dateFrom = $dateFrom;
         }
+        
+        return $this;
     }
 
 	/**
@@ -127,6 +137,8 @@ class DateRange extends Input
         {
             $this->dateTo = $dateTo;
         }
+        
+        return $this;
     }
 
     

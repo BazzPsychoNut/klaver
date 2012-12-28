@@ -1,6 +1,6 @@
 <?php
 
-require_once 'form/Input.php';
+require_once 'Input.php';
 
 
 class Button extends Input
@@ -18,17 +18,7 @@ class Button extends Input
             if (! $this->validate->isValid())
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
                 
-            $disabled  = ! empty($this->disabled) ? ' '.$this->disabled.'="'.$this->disabled.'"' : '';
-            if ($this->getHidden() === true)
-                $this->style .= ' display:none;';
-            if (! empty($this->width))
-                $this->style .= ' width:'.$this->width.'px;';
-                
-            $output = '';
-            if (! empty($this->label) && ! $this->inReportForm)
-                $output .= '<label for="'.$this->id.'">'.$this->label.'</label> ';
-                
-            $output .= '<input type="button" id="'.$this->id.'" class="'.$this->class.'" name="'.$this->name.'" value="'.$this->value.'" style="'.$this->style.'" '.$disabled.' title="'.$this->title.'" />'."\n";
+            $output = $this->getLabel().'<input type="button"'.$this->getId().$this->getClass().$this->getName().$this->getValue().$this->getStyle().$this->getDisabled().$this->getTitle().$this->getOnchange().$this->getOnclick().' />'."\n";
             
             if ($echo)
                 echo $output;

@@ -1,7 +1,6 @@
 <?php
 
-require_once 'form/FormError.php';
-require_once 'form/WeekInput.php';
+require_once 'WeekInput.php';
 
 /**
  * Create 2 week input fields for selecting a week range
@@ -54,11 +53,13 @@ class WeekRange extends Input
             // default validity check
             if (! $this->validate->isValid())
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
+            
+            // copy attributes from WeekRange to the WeekInputs
+            copySharedAttributes($this->weekFrom, $this, array('name','id','values','labels','selected','posted'));
+            copySharedAttributes($this->weekTo, $this, array('name','id','values','labels','selected','posted'));
                 
             // render the week range dropdowns
-            $output = '';
-            $output .= $this->weekFrom->render();
-            $output .= $this->weekTo->render();
+            $output = $this->weekFrom->render(). $this->weekTo->render();
             
             if ($echo)
                 echo $output;

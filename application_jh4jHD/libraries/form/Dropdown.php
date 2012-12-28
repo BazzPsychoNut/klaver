@@ -1,14 +1,12 @@
 <?php
 
-require_once 'form/Input.php';
+require_once 'Input.php';
 
 
 class Dropdown extends Input
 {
     
     protected $multiple;
-    protected $size;
-    protected $categories;
     
    
     
@@ -27,33 +25,21 @@ class Dropdown extends Input
                 
             $selectedValues = ! empty($this->selected) ? $this->selected : '';
             
-            $multiple = $this->multiple === true ? ' multiple="multiple"' : '';
-            $size = ! empty($this->size) ? ' size="'.$this->size.'"' : '';
-            $disabled  = ! empty($this->disabled) ? ' '.$this->disabled.'="'.$this->disabled.'"' : '';
-            if ($this->getHidden() === true)
-                $this->style .= ' display:none;';
-            if (! empty($this->width))
-                $this->style .= ' width:'.$this->width.'px;';
-            
             // create select tag
-            $output = '';
-            if (! empty($this->label) && ! $this->inReportForm)
-                $output .= '<label for="'.$this->id.'">'.$this->label.'</label>';
+            $output = $this->getLabel();
                 
             // multi select dropdown?
             if ($this->multiple === true)
     		{
                 $output .= '<span class="dropdown-multipletext">Hold Ctrl to (de)select multiple.</span><br/>'."\n";
-                $name = substr($this->name, -2) != '[]' ? $this->name.'[]' : $this->name;
+                $name = $this->getName('[]');
     		}
     		else
     		{
-    		    $name = $this->name;
+    		    $name = $this->getName();
     		}
-    		$onchange = ! empty($this->onchange) ? ' onchange="'.$this->onchange.'"' : null;
-    		$onclick  = ! empty($this->onclick) ? ' onclick="'.$this->onclick.'"' : null;
-    		    
-    		$output .= '<select class="'.$this->class.'" name="'.$name.'" id="'.$this->id.'"'.$multiple.$size.' style="'.$this->style.'" '.$disabled.' title="'.$this->title.'"'.$onchange.$onclick.'>'."\n";
+    		
+    		$output .= '<select'.$this->getId().$this->getClass().$name.$this->getMultiple().$this->getSize().$this->getStyle().$this->getDisabled().$this->getTitle().$this->getOnchange().$this->getOnclick().'>'."\n";
     		
     		// create options
     		$lastCategory = '';
@@ -73,14 +59,14 @@ class Dropdown extends Input
 	            
 	            // selected
 	            if (is_array($selectedValues))
-	                $selected = in_array($value, $selectedValues) ? 'selected="selected" ' : '';
+	                $selected = in_array($value, $selectedValues) ? ' selected="selected"' : '';
                 else
-                    $selected = $value == $selectedValues ? 'selected="selected" ' : '';
+                    $selected = $value == $selectedValues ? ' selected="selected"' : '';
                     
 	            $id = $this->id.'-'.$this->toValidHtmlId($value);
 	            
 	            // the actual option
-		        $output .= '<option id="'.$id.'" value="'.$value.'" '.$selected.'>'.$this->labels[$i]."</option>\n";
+		        $output .= '<option id="'.$id.'" value="'.$value.'"'.$selected.'>'.$this->labels[$i]."</option>\n";
 		        
 	        }
 	        
@@ -104,54 +90,13 @@ class Dropdown extends Input
     }
     
     /**
-     * use $query object to populate options list
-     * @param Query $query
-     * @param string $valueColumn
-     * @param string $labelColumn
-     * @param string $categoryColumn
-     */
-    public function appendOptionsFromQuery(Query $query, $valueColumn = 'VALUE', $labelColumn = 'OPTION', $categoryColumn = null)
-    {
-        if ($this->validate->isQuery($query)) // validate and execute $query
-        {
-            foreach ($query->fetchAll() as $row)
-            {
-                $this->appendOption( isset($row[strtoupper($valueColumn)]) ? $row[strtoupper($valueColumn)] : null,
-                                     isset($row[strtoupper($labelColumn)]) ? $row[strtoupper($labelColumn)] : null,
-                                     (! empty($categoryColumn) && isset($row[strtoupper($categoryColumn)])) ? $row[strtoupper($categoryColumn)] : null
-                                   );
-            }
-        }
-    }
-    
-    /**
      * @return the $multiple
      */
     public function getMultiple()
     {
-        return $this->multiple;
+        return $this->multiple === true ? ' multiple="multiple"' : null;
     }
 
-	/**
-     * @return the $size
-     */
-    public function getSize()
-    {
-        return $this->size;
-    }
-
-	/**
-     * @param array $categories
-     */
-    public function setCategories($categories)
-    {
-        $categories = array_values($categories); // enforce numeric array
-        if ($this->validate->isArray($categories))
-        {
-            $this->categories = $categories;
-        }
-    }
-    
     /**
      * @param boolean $multiple
      */
@@ -161,59 +106,8 @@ class Dropdown extends Input
         {
             $this->multiple = $multiple;
         }
-    }
-
-	/**
-     * @param int $size
-     */
-    public function setSize($size)
-    {
-        if ($this->validate->numeric($size))
-        {
-            $this->size = $size;
-        }
-    }
-    
-    /**
-     * append array of options ( $value => $label ) for the dropdown
-     * @param $options
-     */
-    public function appendOptions($options)
-    {
-        foreach ($options as $value => $label)
-        {
-            $this->appendOption($value, $label);
-        }
-    }
-
-    /**
-     * Append individual option <option value="$value">$option</option>
-     * @param string $value
-     * @param string $label
-     * @param optional string $category
-     */
-	public function appendOption($value, $label, $category = null)
-    {
-        $this->values[] = xsschars($value);
-        $this->labels[] = xsschars($label);
-        if (! empty($category))
-            $this->categories[] = $category;
-    }
-
-    /**
-     * Prepend individual option <option value="$value">$option</option>
-     * @param string $value
-     * @param string $label
-     * @param optional string $category
-     */
-	public function prependOption($value, $label, $category = null)
-    {
-        // prepend values to array (Yes, this will set all other numeric keys 1 higher)
-        array_unshift($this->values, $value);
-        array_unshift($this->labels, $label);
         
-        if (! empty($category))
-            array_unshift($this->categories, $category);
+        return $this;
     }
 
     

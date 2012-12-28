@@ -1,6 +1,6 @@
 <?php
 
-require_once 'form/Input.php';
+require_once 'Input.php';
 
 
 class RadioInput extends Input
@@ -24,11 +24,6 @@ class RadioInput extends Input
             }
             
             $output = '';
-            $disabled  = ! empty($this->disabled) ? ' '.$this->disabled.'="'.$this->disabled.'"' : '';
-            if ($this->getHidden() === true)
-                $this->style .= ' display:none;';
-            if (! empty($this->width))
-                $this->style .= ' width:'.$this->width.'px;';
             
             // if it is a collection of checkboxes the property "values" is filled, else the property "value"
             if (! empty($this->values))
@@ -41,10 +36,10 @@ class RadioInput extends Input
     		    $columns = array(); // array to collect the values per column in
 		        foreach ($this->values as $i => $value)
 		        {
-		            $checked = $value == $this->selected ? 'checked="checked" ' : '';
+		            $checked = $value == $this->selected ? ' checked="checked"' : '';
 		            $id = $this->id.'-'.$this->toValidHtmlId($value);
 		            
-    		        $radio = '<input type="radio" id="'.$id.'" class="'.$this->class.'" name="'.$this->name.'" value="'.$value.'" '.$checked.$disabled.' title="'.$this->title.'" />'."\n";
+		            $radio = '<input type="radio" id="'.$id.'"'.$this->getClass().$this->getName().' value="'.$value.'"'.$checked.$this->getDisabled().$this->getTitle().$this->getOnclick().' />'."\n";
                     if (! empty($this->labels[$i]))
                     {
                         $radio .= '<label for="'.$id.'">'.$this->labels[$i].'</label>'."\n";
@@ -78,21 +73,7 @@ class RadioInput extends Input
 		            $output .= '</tr></table>'."\n";
 		        }
 		        
-		        if (! empty($this->label) && ! $this->inReportForm)
-                {
-                    $output = '<label for="'.$this->id.'">'.$this->label.'</label>'."\n".$output;
-                }
-		        $output = '<div id="'.$this->id.'-container" style="'.$this->style.'">'."\n".$output."</div>\n";
-            }
-            elseif (! empty($this->value))
-            {
-    		    $checked = $this->value == $this->selected ? 'checked="checked" ' : '';
-			
-                $output = '<input type="checkbox" id="'.$this->id.'" class="'.$this->class.'" name="'.$this->name.'" value="'.$this->value.'" '.$checked.$disabled.' />'."\n";
-                if (! empty($this->label))
-                {
-                    $output .= '<label for="'.$this->id.'">'.$this->label.'</label>'."\n";
-                }
+		        $output = $this->getLabel().'<div id="'.$this->id.'-container"'.$this->getStyle().'>'."\n".$output."</div>\n";
             }
             
             if ($echo)
@@ -125,11 +106,19 @@ class RadioInput extends Input
     
     /**
      * add given html code at the end of each radio line
-     * @param html $html
+     * @param html $lineEnd
      */
-    public function setLineEnd($html)
+    public function setLineEnd($lineEnd)
     {
-        $this->lineEnd = $html;
+        $this->lineEnd = $lineEnd;
+    }
+    
+    /**
+     * @return html $lineEnd
+     */
+    public function getLineEnd()
+    {
+        return $this->lineEnd;
     }
     
     
