@@ -31,10 +31,11 @@ abstract class Input
               $onchange,
               $size, // File Input doesn't support style="width" and Dropdown also uses it
               $inReportForm = false,
-              $required; // boolean value to tell if the input element is required (and a red star should be displayed in the label)
+              $required = false, // boolean value to tell if the input element is required
+              $invalidations = array(); // result of form validations of this input element  
     
     
-    protected $validate; // Validate object
+    protected $validate; // Validate object (this validates the object attributes are properly set, not the form validation!)
     
     // bitwise flags
     const INPUT_OVERRULE_POST = 1; // make the given selected value overwrite anything that is posted
@@ -155,8 +156,8 @@ abstract class Input
     	if (empty($this->label) || $this->inReportForm)
     		return null;
     		
-   		//return '<label for="'.$this->id.'">'.$this->label.($this->required ? ' <span class="required">*</span>' : '').'</label> ';
-   		return '<label for="'.$this->id.'">'.$this->label.'</label> ';
+   		$class = $this->required ? ' class="required"' : '';
+   		return '<label for="'.$this->id.'"'.$class.'>'.$this->label.'</label> ';
     }
     
     /**
@@ -463,7 +464,7 @@ abstract class Input
      * @param string $labelColumn
      * @param string $categoryColumn
      */
-    public function appendOptionsFromQuery(Query $query, $valueColumn = 'VALUE', $labelColumn = 'OPTION', $categoryColumn = null)
+    public function appendOptionsFromQuery(Query $query, $valueColumn, $labelColumn, $categoryColumn = null)
     {
         if ($this->validate->isQuery($query)) // validate and execute $query
         {
@@ -472,9 +473,9 @@ abstract class Input
 			{
 				foreach ($result as $row)
 				{
-					$this->appendOption( isset($row[strtoupper($valueColumn)]) ? $row[strtoupper($valueColumn)] : null,
-										 isset($row[strtoupper($labelColumn)]) ? $row[strtoupper($labelColumn)] : null,
-										 (! empty($categoryColumn) && isset($row[strtoupper($categoryColumn)])) ? $row[strtoupper($categoryColumn)] : null
+					$this->appendOption( isset($row[$valueColumn]) ? $row[$valueColumn] : null,
+										 isset($row[$labelColumn]) ? $row[$labelColumn] : null,
+										 (! empty($categoryColumn) && isset($row[$categoryColumn])) ? $row[$categoryColumn] : null
 									   );
 				}
             }
@@ -651,6 +652,15 @@ abstract class Input
     }
     
     /**
+     * is this input element posted?
+     * @return boolean
+     */
+    public function isPosted()
+    {
+    	return (! empty($_POST[$this->name]) or ! empty($_FILES[$this->name]));
+    }
+    
+    /**
      * set $disabled
      * @param value or false $disabled
      */
@@ -759,12 +769,38 @@ abstract class Input
 		if ($this->validate->isBoolean($required))
 		{
 			$this->required = $required;
+			
 			if ($required)
 				$this->addClass('required');
 			else
 				$this->removeClass('required');
 		}
 	}
+	
+	/**
+	 * @return array $invalidations
+	 */
+	public function getInvalidations() 
+	{
+		return $this->invalidations;
+	}
+
+	/**
+	 * @param string $invalidation
+	 */
+	public function addInvalidation($invalidation) 
+	{
+		$this->invalidations[] = $invalidation;
+		
+		return $this;
+	}
+	
+	
+	public function isValid()
+	{
+		return empty($this->invalidations);
+	}
+
 
 
 

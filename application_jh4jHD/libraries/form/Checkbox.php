@@ -207,6 +207,15 @@ class Checkbox extends Input
     }
     
     /**
+     * is this input element posted?
+     * @return boolean
+     */
+    public function isPosted()
+    {
+    	return (isset($_POST[$this->name.'-isPosted']) && isPosted($this->name));
+    }
+    
+    /**
      * give amount of columns the list should be displayed in
      * @param int $int
      */

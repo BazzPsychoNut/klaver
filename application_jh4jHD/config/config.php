@@ -226,6 +226,20 @@ $config['cache_path'] = '';
 */
 $config['encryption_key'] = 'we7W$@pJb26JGgrsk*EpVUgklVu!2@mA';
 
+
+/*
+|--------------------------------------------------------------------------
+| Password system salt (zelf toegevoegd)
+|--------------------------------------------------------------------------
+|
+| Passwords are stored by concatenating password, system salt and personal salt
+|
+*/
+$config['system_salt'] = '7n#63pDq669q9M4R';
+
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Session Variables

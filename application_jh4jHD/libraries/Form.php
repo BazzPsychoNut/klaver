@@ -31,12 +31,44 @@ class Form
 	protected $method = 'post',
 			  $action = '',
 			  $enctype = 'application/x-www-form-urlencoded', // this is the default value anyway
-			  $name;
+			  $name,
+			  $isValid = true;
 	
 	
-	public function render()
+	/* abstract */ public function render()
 	{}
 	
+	/* abstract */ public function isPosted()
+	{}
+	
+	/* abstract */ public function validate()
+	{}
+	
+	/**
+	 * Invalidate input field (and let this form know it is invalid)
+	 * @param Input $input
+	 * @param string $invalidation
+	 */
+	protected function invalidate(Input $input, $invalidation)
+	{
+		$this->isValid = false;
+		$input->addInvalidation($invalidation);
+	}
+	
+	/**
+	 * generate salt
+	 * @param int $length
+	 * @return string
+	 */
+	public function generateSalt($length = 10)
+	{
+		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*?";
+		$salt = '';
+		for ($i=0; $i<$length; $i++)
+			$salt .= $chars[mt_rand(0, strlen($chars)-1)];
+		
+		return $salt;
+	}
 	
 	/**
 	 * @return the $method

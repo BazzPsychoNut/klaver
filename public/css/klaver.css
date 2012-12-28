@@ -2,7 +2,7 @@ body            { font-family:Verdana, Arial, sans-serif; font-size:14px; color:
 p               { margin-bottom:20px; }
 
 /* kopjes */
-h1, h2, h3, h4 	{ font-weight:normal; margin-bottom:0.5em; }
+h1, h2, h3, h4 	{ font-weight:normal; margin:1em 0 0.5em 0; }
 h1 				{ color:#EE3322; font-size:190%; }
 h2 				{ color:#003D4C; font-size:190%; }
 h3 				{ color:#2C6877; font-size:165%; }
@@ -34,9 +34,19 @@ div.poule_overview table tr			{ border-bottom:1px solid #ddd; }
 div.poule_overview table table tr	{ border-bottom:0; }
 
 /* forms */
-label										{ float:left; width:180px; }
+label										{ float:left; width:150px; padding-top:5px; }
 input, select, textarea						{ float:left; padding:5px; margin:0 10px 2px 0; }
-input[type="submit"], input[type="button"]	{ padding:5px 20px; }
-input.required, select.required				{ border:1px solid #003D4C; }
+input[type="submit"], input[type="button"]	{ 
+	padding: 8px 20px;  
+	font-size: 110%; 
+	color: #FFFFFF;
+	background-color: #62AF56;
+    background: -moz-linear-gradient(center top , #76BF6B, #3B8230) repeat scroll 0 0 #62AF56;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+	border: 1px solid #2D6324;
+    border-radius: 4px 4px 4px 4px;
+}
+input[type="submit"]:hover 					{ background: none repeat scroll 0 0 #5BA150; }
+label.required								{ font-weight:bold; }
 input.error, select.error					{ border-color:red; }
 				
