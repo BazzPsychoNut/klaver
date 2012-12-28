@@ -1,6 +1,4 @@
 
-			<h1>Fonteinkerk Klaverjascompetitie</h1>
-			
 			<div id="welkom">
 				<p>
 					Inmiddels zijn we bezig met het derde seizoen van de Fonteinkerk Klaverjascompetitie.<br/>

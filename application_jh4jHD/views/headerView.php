@@ -23,6 +23,7 @@ $base_url = $this->config->base_url();
 					<li><a href="<?php echo $base_url; ?>">Home</a>
 					</li><li><a href="<?php echo $base_url; ?>overview">Overzicht</a>
 					</li><li><a href="<?php echo $base_url; ?>input_match">Partij invoeren</a>
+					</li><li><a href="<?php echo $base_url; ?>plan">Afspraak plannen</a>
 					</li><li><a href="<?php echo $base_url; ?>signup">Aanmelden</a>
 					</li><li><a href="<?php echo $base_url; ?>login">Inloggen</a></li>
 				</ul>
