@@ -20,6 +20,8 @@ class HiddenInput extends Input
 
             $output = '<input type="hidden"'.$this->getId().$this->getClass().$this->getName().$this->getValue().$this->getStyle().$this->getDisabled().$this->getTitle().$this->getOnchange().' />'."\n";
             
+            $output .= $this->renderInvalidations();
+            
             if ($echo)
                 echo $output;
             else

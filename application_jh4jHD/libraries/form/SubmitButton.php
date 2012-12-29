@@ -20,6 +20,8 @@ class SubmitButton extends Input
                 
             $output = $this->getLabel().'<input type="submit"'.$this->getId().$this->getClass().$this->getName().$this->getValue().$this->getStyle().$this->getDisabled().$this->getTitle().$this->getOnclick().' />'."\n";
             
+            $output .= $this->renderInvalidations();
+            
             if ($echo)
                 echo $output;
             else

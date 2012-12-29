@@ -23,6 +23,8 @@ class ImageButton extends Input
                 
             $output = $this->getLabel().'<input type="image"'.$this->getSrc().$this->getAlt().$this->getId().$this->getClass().$this->getName().$this->getValue().$this->getStyle().$this->getTitle().$this->getOnclick().' />'."\n";
             
+            $output .= $this->renderInvalidations();
+            
             if ($echo)
                 echo $output;
             else

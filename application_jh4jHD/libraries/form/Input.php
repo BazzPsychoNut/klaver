@@ -795,13 +795,25 @@ abstract class Input
 		return $this;
 	}
 	
-	
+	/**
+	 * is the input valid?
+	 */
 	public function isValid()
 	{
 		return empty($this->invalidations);
 	}
 
-
+	/**
+	 * render the invalidations
+	 * @return NULL|string
+	 */
+	protected function renderInvalidations()
+	{
+		if (empty($this->invalidations))
+			return null;
+		
+		return '<div class="invalidations">'.implode("<br/>\n", $this->invalidations)."</div>\n";
+	}
 
 
     

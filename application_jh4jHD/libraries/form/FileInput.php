@@ -24,6 +24,8 @@ class FileInput extends Input
                 
             $output = $this->getLabel().'<input type="file"'.$this->getId().$this->getClass().$this->getName().$this->getSize().$this->getStyle().$this->getDisabled().$this->getTitle().$this->getOnchange().$this->getOnclick().' />'."\n";
             
+            $output .= $this->renderInvalidations();
+            
             if ($echo)
                 echo $output;
             else

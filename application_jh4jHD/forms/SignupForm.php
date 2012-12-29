@@ -39,14 +39,38 @@ class SignupForm extends Form
 		$this->player2['email'] = new TextInput('player2_email');
 		$this->player2['email']->setLabel('E-mail');
 		
+		// singles
+		// select players without a team or players without someone else in their team ;)
+		$sql = "select p.player_id
+				,      p.name
+				from
+				(
+				    select min(player_id) player_id
+				    from   players 
+				    group by team_id
+				    having min(player_id) = max(player_id)
+				    union
+				    select player_id
+				    from   players
+				    where  team_id is null
+				) t
+				join   players p on t.player_id = p.player_id
+				order by name";
+		$query = $this->db->query($sql);
+		$result = $query->result_array();
+		if (! empty($result))
+		{
+			$options = array();
+			foreach ($result as $row)
+				$options[$row['player_id']] = $row['name'];
+			
+			$this->singles = new Dropdown('singles');
+			$this->singles->setLabel('Vorm een team met:')->addStyle('min-width:200px;')->appendOptions($options);
+		}
+		
 		// team
 		$this->team = new TextInput('team_name');
 		$this->team->setLabel('Teamnaam');
-		
-		// singles
-		$this->singles = new Dropdown('singles');
-		$this->singles->setLabel('Of vorm een team met:');
-		// TODO fetch all singles en stop ze in deze dropdown
 		
 		// submit
 		$this->submit = new SubmitButton('aanmelden', 'Aanmelden');
@@ -70,10 +94,14 @@ class SignupForm extends Form
 		foreach ($this->player2 as $input)
 			$output .= $input->render().BRCLR;
 		
+		if (! empty($this->singles))
+		{
+			$output .= '<p style="margin-bottom:0; font-weight:bold;">Of</p>'."\n";
+			$output .= $this->singles->render().BRCLR;
+		}
+		
 		$output .= '<h2>Team</h2>'."\n";
 		$output .= $this->team->render().BRCLR;
-		
-		$output .= $this->singles->render().BRCLR;
 		
 		$output .= $this->submit->render().BRCLR;
 		

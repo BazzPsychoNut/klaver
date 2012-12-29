@@ -96,8 +96,9 @@ class WeekInput extends Input
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
             
             // copy the attributes given to WeekInput to the children year and week
-            copySharedAttributes($this->year, $this, array('name','id','values','labels','selected'));
-            copySharedAttributes($this->week, $this, array('name','id','values','labels','selected'));
+            $excludes = array('name','id','value','label','selected','posted','required','invalidations');
+            copySharedAttributes($this->year, $this, $excludes);
+            copySharedAttributes($this->week, $this, $excludes);
                 
             // start output
             if (! empty($this->label) && ! $this->inReportForm)
@@ -119,7 +120,9 @@ class WeekInput extends Input
         					});
 		                </script>'."\n";
             
-    		if ($echo)
+    		$output .= $this->renderInvalidations();
+            
+            if ($echo)
                 echo $output;
             else
                 return $output;

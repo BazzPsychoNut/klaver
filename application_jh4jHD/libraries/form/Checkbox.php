@@ -151,6 +151,8 @@ class Checkbox extends Input
             $hidden = new HiddenInput($this->name.'-isPosted', 1);
             $output .= $hidden->render();
             
+            $output .= $this->renderInvalidations();
+            
             // return or echo output
             if ($echo)
                 echo $output;

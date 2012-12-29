@@ -10,17 +10,17 @@ h4 				{ color:#999933; font-size:100%; }
 
 /* header (copied from intranet) */
 div#header 		{ background-color: #003F78; padding: 10px 20px; z-index: 999; position:relative; }
-#header h1 		{ background:url("../img/logo_wit.png") no-repeat scroll left center transparent; color:#FFFFFF; font-size:3em; height:50px; }
+#header h1 		{ background:url("../img/logo_wit.png") no-repeat scroll left center transparent; color:#FFFFFF; font-size:3em; height:50px; margin-top:0; }
 #header h1 a 	{ color:#FFFFFF; font-weight:normal; padding:20px 0 20px 100px; text-decoration:none; }
 
 /* top menu */
 #top_menu				{ margin-left:104px; }
 #top_menu a 			{ color:white; padding:12px; text-decoration:none; }
 #top_menu li 			{ border-left: 1px solid white; display: inline; list-style: none outside none; margin: 0; padding:10px 0; }
-#top_menu li:hover 		{ background-color: white; }
-#top_menu li:hover a 	{ color: #003F78; }
+#top_menu li:hover 		{ background-color:white; }
+#top_menu li:hover a 	{ color:#003F78; }
 
-/* container (copied from intranet) */
+/* container */
 div#container 	{ border-top:0 none; box-shadow:0 0 5px 5px #888888; margin:0 auto; text-align:left; width:960px; background-color:#fff; padding:0; }
 div#content		{ padding:10px 20px 40px; }
 
@@ -49,4 +49,5 @@ input[type="submit"], input[type="button"]	{
 input[type="submit"]:hover 					{ background: none repeat scroll 0 0 #5BA150; }
 label.required								{ font-weight:bold; }
 input.error, select.error					{ border-color:red; }
+div.invalidations							{ border:1px solid #9E2440; color:#9E2440; background-color:#FFDACC; }
 				

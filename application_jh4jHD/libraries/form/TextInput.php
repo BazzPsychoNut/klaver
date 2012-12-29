@@ -21,6 +21,8 @@ class TextInput extends Input
                 
             $output = $this->getLabel().'<input type="text"'.$this->getId().$this->getClass().$this->getName().$this->getValue().$this->getStyle().$this->getDisabled().$this->getMaxLength().$this->getTitle().$this->getOnchange().$this->getOnclick().' />'."\n";
             
+            $output .= $this->renderInvalidations();
+            
             if ($echo)
                 echo $output;
             else

@@ -25,6 +25,8 @@ class TextAreaInput extends Input
             $output .= ! empty($this->selected) ? $this->selected : $this->value; // can't use getValue() here, because that will return value="value"
             $output .= "</textarea>\n";
             
+            $output .= $this->renderInvalidations();
+            
             if ($echo)
                 echo $output;
             else

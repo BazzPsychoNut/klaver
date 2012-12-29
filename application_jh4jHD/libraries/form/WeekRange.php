@@ -55,11 +55,14 @@ class WeekRange extends Input
                 throw new Exception($this->validate->getMessage('Error rendering '.get_class($this).' object with name '.$this->name));
             
             // copy attributes from WeekRange to the WeekInputs
-            copySharedAttributes($this->weekFrom, $this, array('name','id','values','labels','selected','posted'));
-            copySharedAttributes($this->weekTo, $this, array('name','id','values','labels','selected','posted'));
+            $excludes = array('name','id','value','label','selected','posted','required','invalidations');
+            copySharedAttributes($this->weekFrom, $this, $excludes);
+            copySharedAttributes($this->weekTo, $this, $excludes);
                 
             // render the week range dropdowns
             $output = $this->weekFrom->render(). $this->weekTo->render();
+            
+            $output .= $this->renderInvalidations();
             
             if ($echo)
                 echo $output;

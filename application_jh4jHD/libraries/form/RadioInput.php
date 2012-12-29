@@ -76,6 +76,8 @@ class RadioInput extends Input
 		        $output = $this->getLabel().'<div id="'.$this->id.'-container"'.$this->getStyle().'>'."\n".$output."</div>\n";
             }
             
+            $output .= $this->renderInvalidations();
+            
             if ($echo)
                 echo $output;
             else

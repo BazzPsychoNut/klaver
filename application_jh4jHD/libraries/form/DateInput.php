@@ -48,7 +48,9 @@ class DateInput extends Input
         	    		    </script>'."\n";
             }
     		
-    		if ($echo)
+    		$output .= $this->renderInvalidations();
+            
+            if ($echo)
                 echo $output;
             else
                 return $output;

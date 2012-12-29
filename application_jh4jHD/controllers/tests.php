@@ -77,6 +77,14 @@ class Tests extends CI_Controller
 	}
 	
 	/**
+	 * test Signup
+	 */
+	public function signup()
+	{
+		
+	}
+	
+	/**
 	 * generate the report view
 	 * @param string $testName
 	 */
@@ -88,4 +96,3 @@ class Tests extends CI_Controller
 	}
 }
 
-/* Location: ./application/controllers/home.php */
