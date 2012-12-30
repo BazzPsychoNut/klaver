@@ -791,6 +791,7 @@ abstract class Input
 	public function addInvalidation($invalidation) 
 	{
 		$this->invalidations[] = $invalidation;
+		$this->addClass('invalid');
 		
 		return $this;
 	}

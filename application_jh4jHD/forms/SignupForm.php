@@ -65,7 +65,11 @@ class SignupForm extends Form
 				$options[$row['player_id']] = $row['name'];
 			
 			$this->singles = new Dropdown('singles');
-			$this->singles->setLabel('Vorm een team met:')->addStyle('min-width:200px;')->appendOptions($options);
+			$this->singles
+				->setLabel('Vorm een team met:')
+				->addStyle('min-width:200px;')
+				->prependOption('', '-- kies een maat --')
+				->appendOptions($options);
 		}
 		
 		// team

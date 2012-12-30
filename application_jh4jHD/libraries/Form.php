@@ -71,6 +71,15 @@ class Form
 	}
 	
 	/**
+	 * is the form valid?
+	 * @return boolean
+	 */
+	public function isValid()
+	{
+		return $this->isValid;
+	}
+	
+	/**
 	 * @return the $method
 	 */
 	public function getMethod() {

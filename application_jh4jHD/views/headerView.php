@@ -35,8 +35,12 @@ $base_url = $this->config->base_url();
 					</li><li><a href="<?php echo $base_url; ?>logout">Uitloggen</a></li>
 					<?php else: ?>
 					</li><li><a href="<?php echo $base_url; ?>signup">Aanmelden</a>
-					</li><li><a href="<?php echo $base_url; ?>login">Inloggen</a></li>
+					</li><li><a href="<?php echo $base_url; ?>login">Inloggen</a>
 					<?php endif; ?>
+					<?php if ($this->session->userdata('user_level') == 2): ?>
+					</li><li><a href="<?php echo $base_url; ?>admin">Admin</a>
+					<?php endif; ?>
+					</li>
 				</ul>
 			</div>
 		</div>

@@ -48,6 +48,6 @@ input[type="submit"], input[type="button"]	{
 }
 input[type="submit"]:hover 					{ background: none repeat scroll 0 0 #5BA150; }
 label.required								{ font-weight:bold; }
-input.error, select.error					{ border-color:red; }
-div.invalidations							{ border:1px solid #9E2440; color:#9E2440; background-color:#FFDACC; }
+input.invalid, select.invalid, textarea.invalid	{ border:1px solid #EE3322; }
+div.invalidations							{ float:left; border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:3px; margin-bottom:5px; max-width:400px; }
 				

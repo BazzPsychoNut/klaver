@@ -37,10 +37,18 @@
 							<br/>
 							<p>Beste <?php echo $name; ?>,</p>
 							<p>
-								Leuk dat je meedoet aan de klaverjascompetitie!<br/>
+								<?php echo $maatName; ?> heeft je ingeschreven voor de klaverjascompetitie!<br/>
+								<?php if (! empty($teamName)): ?>
+								Jullie vormen samen het team <?php echo $teamName; ?><br/>
+								<?php endif; ?>
+							</p>
+							<p>
 								Klik <a href="<?php echo $activationLink; ?>">hier</a> om je account te activeren.<br/><br/>
 								Werkt de link niet? Kopieer dan onderstaande link in je browser.<br/>
 								<?php echo $activationLink; ?>
+							</p>
+							<p>
+								Je wachtwoord is Welkom01. Bij de eerste keer inloggen zul een eigen wachtwoord moeten opgeven.
 							</p>
 						</td>
 					</tr>
@@ -62,7 +70,7 @@
 								</tr>
 								<tr>
 									<th>Wachtwoord</th>
-									<td> <?php echo $password; ?></td>
+									<td> Welkom01</td>
 								</tr>
 							</table>
 						</td>
