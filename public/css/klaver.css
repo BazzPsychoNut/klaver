@@ -49,5 +49,9 @@ input[type="submit"], input[type="button"]	{
 input[type="submit"]:hover 					{ background: none repeat scroll 0 0 #5BA150; }
 label.required								{ font-weight:bold; }
 input.invalid, select.invalid, textarea.invalid	{ border:1px solid #EE3322; }
-div.invalidations							{ float:left; border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:3px; margin-bottom:5px; max-width:400px; }
+div.invalidations							{ float:left; border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:3px; margin-bottom:5px; }
+
+/* feedback */
+div.error									{ border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:8px; margin-bottom:5px; }
+div.success									{ border:1px solid green; color:green; background-color:#66ff66; padding:8px; margin-bottom:5px; }
 				

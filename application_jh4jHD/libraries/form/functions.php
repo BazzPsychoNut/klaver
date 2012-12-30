@@ -625,7 +625,7 @@ function error($msg)
  */
 function success($msg)
 {
-    return '<div class="succes">'.$msg."</div>\n";
+    return '<div class="success">'.$msg."</div>\n";
 }
 
 /**

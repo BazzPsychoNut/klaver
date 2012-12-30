@@ -19,6 +19,8 @@
 		/* container */
 		div#container 	{ border-top:0 none; box-shadow:0 0 5px 5px #888888; margin:0 auto; text-align:left; width:960px; background-color:#fff; padding:0; }
 		div#content		{ padding:10px 20px 40px; }
+		
+		table th		{ padding-right:10px; }
 		</style>
 	</head>
 	
@@ -61,7 +63,7 @@
 									<td> <?php echo $email; ?></td>
 								</tr>
 								<tr>
-									<th>Wachtwoord</th>
+									<th style="padding-right:10px;">Wachtwoord</th>
 									<td> <?php echo $password; ?></td>
 								</tr>
 							</table>

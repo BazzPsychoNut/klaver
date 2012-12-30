@@ -153,6 +153,7 @@ class SignupForm extends Form
 		
 		// team
 		// I don't really care what team name is given. It will always be overwritten by anyone in the team changing it.
+		return $this->isValid;
 	}
 	
 	/**
