@@ -22,7 +22,7 @@ div#header 		{ background-color: #003F78; padding: 10px 20px; z-index: 999; posi
 
 /* container */
 div#container 	{ border-top:0 none; box-shadow:0 0 5px 5px #888888; margin:0 auto; text-align:left; width:960px; background-color:#fff; padding:0; }
-div#content		{ padding:10px 20px 40px; }
+div#content		{ padding:10px 20px 40px; min-height:600px; }
 
 /* poule overview */
 div.poule_overview					{ margin:40px 0; }
@@ -49,9 +49,18 @@ input[type="submit"], input[type="button"]	{
 input[type="submit"]:hover 					{ background: none repeat scroll 0 0 #5BA150; }
 label.required								{ font-weight:bold; }
 input.invalid, select.invalid, textarea.invalid	{ border:1px solid #EE3322; }
-div.invalidations							{ float:left; border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:3px; margin-bottom:5px; }
+div.invalidations							{ float:left; border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:3px; margin-bottom:5px; max-width:400px; }
 
 /* feedback */
-div.error									{ border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:8px; margin-bottom:5px; }
-div.success									{ border:1px solid green; color:green; background-color:#66ff66; padding:8px; margin-bottom:5px; }
+div.error, div.success						{ width:600px; padding:8px; margin-bottom:5px; }
+div.error									{ border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; }
+div.success									{ border:1px solid green; color:green; background-color:#66ff66; }
+
+/* account */
+div#account_gegevens table th				{ font-weight:bold; padding:3px; }
+div#account_gegevens table th,
+div#change_password_container label,
+div#change_account_container label,
+div#change_team_container label				{ width:190px; }
+
 				
