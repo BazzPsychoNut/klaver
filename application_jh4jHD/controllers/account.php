@@ -2,7 +2,7 @@
 
 require_once APPPATH.'forms/ChangePasswordForm.php';
 require_once APPPATH.'forms/ChangeAccountForm.php';
-// require_once APPPATH.'forms/ChangeTeamForm.php';
+require_once APPPATH.'forms/ChangeTeamForm.php';
 
 class Account extends CI_Controller 
 {
@@ -12,7 +12,11 @@ class Account extends CI_Controller
 		if ($this->session->userdata('user_logged_in') === false && $this->session->userdata('user_has_default_password') !== true)
 			redirect('login');
 		
-		// fetch account data
+		$change_password_view = $this->change_password();
+		$change_account_view = $this->change_account();
+		$change_team_view = $this->change_team();
+		
+		// fetch account data after possible changes
 		$sql = "select p.name
 				,      p.email
 				,      t.name   team_name
@@ -26,16 +30,18 @@ class Account extends CI_Controller
 		$data = $query->row_array();
 		
 		$this->load->view('headerView');
-		$this->load->view('accountView', $data);  
-		
-		$this->change_password();
-		$this->change_account();
-		$this->change_team();
-		
+		$this->load->view('accountView', $data);
+		echo $change_password_view;
+		echo $change_account_view;
+		echo $change_team_view;  
 		$this->load->view('footerView');
 	}
 	
-	
+	/**
+	 * render the change password part of the page
+	 * @throws Exception
+	 * @return view
+	 */
 	public function change_password()
 	{
 		$data = array();
@@ -107,10 +113,14 @@ class Account extends CI_Controller
 		}
 		
 		$data['form'] = $form;
-		$this->load->view('changePasswordView', $data);
+		return $this->load->view('changePasswordView', $data, true);
 	}
 	
-	
+	/**
+	 * render the change account part of the page
+	 * @throws Exception
+	 * @return view
+	 */
 	public function change_account()
 	{
 		// only show this if user is logged in
@@ -137,8 +147,9 @@ class Account extends CI_Controller
 				if ($form->email->isPosted())
 				{
 					$set['email'] = $form->email->getPosted();
-					// TODO add activatie stuff
-					$set['']
+					// reset account for email confirmation
+					$set['confirmation'] = $form->generateSalt(10); // string of 10 random chars that will be used as email confirmation and account activation
+					$set['level'] = 0;
 				}
 				
 				if (empty($set)) // should be impossible, but doublecheck
@@ -148,9 +159,30 @@ class Account extends CI_Controller
 				if (! $this->db->update('players', $set, $where))
 					throw new Exception('Error bij wijzigen account gegevens. '.$this->db->_error_message());
 				
-				// TODO bij wijzigen email moet nieuwe activatiemail verstuurd worden
+				// bij wijzigen email moet nieuwe activatiemail verstuurd worden
+				if ($form->email->isPosted())
+				{
+				    $sql = "select name, email from players where player_id = :player_id";
+				    $query = $this->db->query($sql, array(':player_id' => $this->session->userdata('user_id')));
+				    $email_data = $query->result_array();
+				    $email_message = $this->load->view('emailChangeEmail', $email_data, true);
+				    if ($_SERVER['SERVER_NAME'] == 'localhost') // working locally
+				    {
+				        echo '<div style="padding:30px; border:10px solid #888;">'.$email_message.'</div>'."\n";
+				    }
+				    else
+				    {
+				        $this->email->initialize(array('mailtype' => 'html'));
+				        $this->email->from('klaverjascompetitie@fonteinkerkhaarlem.nl', 'Klaverjascompetitie');
+				        $this->email->to($email_data['email']);
+				        $this->email->subject('Welkom bij de Fonteinkerk klaverjascompetitie');
+				        $this->email->message($email_message);
+				        if (! $this->email->send())
+				            throw new Exception('Error bij verzenden email met activatielink voor nieuw email adres van '.$email_data['name'].'.');
+				    }
+				}
 		
-				$data['feedback'] = success('Je gegevens zijn nu veranderd.'); // TODO de gegevens die getoond worden zijn nog niet ververst.
+				$data['feedback'] = success('Je gegevens zijn nu veranderd.');
 		
 			}
 			catch (Exception $e)
@@ -160,17 +192,49 @@ class Account extends CI_Controller
 		}
 		
 		$data['form'] = $form;
-		$this->load->view('changeAccountView', $data);
+		return $this->load->view('changeAccountView', $data);
 	}
 	
-	
+	/**
+	 * render the change team name part of the page
+	 * @throws Exception
+	 * @return view
+	 */
 	public function change_team()
 	{
 		// only show this if user is logged in
 		if ($this->session->userdata('user_logged_in') === false)
 			return;
 		
-		// TODO create form, view and handle post here
+		$data = array();
+		
+		// create the form
+		$form = new ChangeTeamForm('ChangeTeamForm');
+		
+		// handle post of form
+		if ($form->isPosted())
+		{
+		    try
+		    {
+		        if (! $form->validate())
+		            throw new Exception('Het wijzigen van je gegevens is mislukt, omdat niet alle velden goed zijn ingevuld.');
+		
+		        // store new data
+		        $where = array('player_id' => $this->session->userdata('user_id'));
+		        if (! $this->db->update('players', array('email' => $form->email->getPosted()), $where))
+		            throw new Exception('Error bij wijzigen teamnaam. '.$this->db->_error_message());
+		        
+		        $data['feedback'] = success('De teamnaam is nu veranderd.');
+		
+		    }
+		    catch (Exception $e)
+		    {
+		        $data['feedback'] = error($e->getMessage());
+		    }
+		}
+		
+		$data['form'] = $form;
+		return $this->load->view('changeTeamView', $data);
 	}
 	
 }
