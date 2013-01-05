@@ -1,4 +1,6 @@
 
+			<h1>Fonteinkerk Klaverjascompetitie</h1>
+			
 			<div id="welkom">
 				<p>
 					Inmiddels zijn we bezig met het derde seizoen van de Fonteinkerk Klaverjascompetitie.<br/>
@@ -10,6 +12,7 @@
 				</p>
 			</div>
 			
-			<?php echo $pouleOverview1; ?> 
-			<?php echo $pouleOverview2; ?>
+			<?php echo $pouleRanking1; ?> 
+			<?php echo $pouleRanking2; ?>
+			<br class="clear" />
 	

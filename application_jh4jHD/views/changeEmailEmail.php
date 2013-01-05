@@ -39,7 +39,7 @@
 							<br/>
 							<p>Beste <?php echo $name; ?>,</p>
 							<p>
-								Je hebt je e-mail adres gewijzigd. <br/>
+								Je hebt je e-mail adres gewijzigd. Daarom is het account op dit moment uitgeschakeld.<br/>
 								Klik <a href="<?php echo $activationLink; ?>">hier</a> om je account weer te activeren.<br/><br/>
 								Werkt de link niet? Kopieer dan onderstaande link in je browser.<br/>
 								<?php echo $activationLink; ?>

@@ -66,7 +66,7 @@ class ChangeTeamForm extends Form
 	 */
 	public function isPosted()
 	{
-		return (! empty($_POST['change_team']));
+		return $this->submit->isPosted();
 	}
 	
 }

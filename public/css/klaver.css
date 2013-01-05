@@ -24,6 +24,11 @@ div#header 		{ background-color: #003F78; padding: 10px 20px; z-index: 999; posi
 div#container 	{ border-top:0 none; box-shadow:0 0 5px 5px #888888; margin:0 auto; text-align:left; width:960px; background-color:#fff; padding:0; }
 div#content		{ padding:10px 20px 40px; min-height:600px; }
 
+/* poule ranking */
+div.poule_ranking					{ float:left; margin:10px 20px; }
+div.poule_ranking table th			{ font-weight:bold; border-bottom:1px solid #ddd; padding:4px; }
+div.poule_ranking table td			{ padding:3px; border-bottom:1px solid #ddd; }
+
 /* poule overview */
 div.poule_overview					{ margin:40px 0; }
 div.poule_overview table th 		{ border-right:1px solid #ddd; padding:4px; }
@@ -32,11 +37,13 @@ div.poule_overview table td.team	{ padding:5px; }
 div.poule_overview table td.score	{ text-align:center; }
 div.poule_overview table tr			{ border-bottom:1px solid #ddd; }
 div.poule_overview table table tr	{ border-bottom:0; }
+td.my_match							{ background-color:#B1D1D8; }
+span.this_is_me						{ color:#EE3322; }
 
 /* forms */
 label										{ float:left; width:150px; padding-top:5px; }
 input, select, textarea						{ float:left; padding:5px; margin:0 10px 2px 0; }
-input[type="submit"], input[type="button"]	{ 
+input[type="submit"], input[type="button"], div.error, div.success  { 
 	padding: 8px 20px;  
 	font-size: 110%; 
 	color: #FFFFFF;
@@ -46,21 +53,30 @@ input[type="submit"], input[type="button"]	{
 	border: 1px solid #2D6324;
     border-radius: 4px 4px 4px 4px;
 }
-input[type="submit"]:hover 					{ background: none repeat scroll 0 0 #5BA150; }
-label.required								{ font-weight:bold; }
+input[type="submit"]:hover 			{ background: none repeat scroll 0 0 #5BA150; }
+label.required						{ font-weight:bold; }
 input.invalid, select.invalid, textarea.invalid	{ border:1px solid #EE3322; }
-div.invalidations							{ float:left; border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:3px; margin-bottom:5px; max-width:400px; }
+div.invalidations					{ float:left; border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:3px; margin-bottom:5px; max-width:400px; }
 
 /* feedback */
-div.error, div.success						{ width:600px; padding:8px; margin-bottom:5px; }
-div.error									{ border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; }
-div.success									{ border:1px solid green; color:green; background-color:#66ff66; }
+div.error, div.success				{ width:600px; margin-bottom:5px; }
+div.error							{ border-color:brown; background: none repeat scroll 0 0 #E25A3F; }
+div.success							{ border-color:#2D6324; background: none repeat scroll 0 0 #5BA150; }
 
 /* account */
-div#account_gegevens table th				{ font-weight:bold; padding:3px; }
+div#account_gegevens table th		{ font-weight:bold; padding:3px; }
 div#account_gegevens table th,
-div#change_password_container label,
-div#change_account_container label,
-div#change_team_container label				{ width:190px; }
+div.account_form label				{ width:190px; }
+div.account_form 					{ margin-top:50px; }
+
+/* input match */
+table#hands_input input				{ width:33px; text-align:right; }
+table#hands_input td.hands_input_spacer { width:30px; }
+table#hands_input thead th			{ text-align:center; font-weight:bold; padding:10px 10px 5px 0; }
+table#hands_input thead td			{ text-align:left; padding-bottom:5px; }
+table#hands_input tbody th			{ text-align:right; padding-right:10px; }
+table#hands_input tfoot td			{ text-align:right; padding-right:16px; font-weight:bold; } 
+table#hands_input tr.row_spacer		{ border-top:20px solid white; }
+
 
 				

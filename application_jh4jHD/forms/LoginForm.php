@@ -77,7 +77,7 @@ class LoginForm extends Form
 	 */
 	public function isPosted()
 	{
-		return (! empty($_POST['inloggen']));
+		return $this->submit->isPosted();
 	}
 	
 }

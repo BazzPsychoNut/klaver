@@ -20,11 +20,19 @@ class Login extends CI_Controller
 					throw new Exception('Het inloggen is mislukt, omdat niet alle velden goed zijn ingevuld.');
 				
 				// check email & password
-				$sql = "select * from players where email = ?";
+				$sql = "select p.*
+						,      t.name team_name 
+						,      t.poule_id
+						from   players  p
+						left join teams t on p.team_id = t.team_id
+						where  p.email = ?";
 				$query = $this->db->query($sql, array($form->email->getPosted()));
 				$row = $query->row_array();
-				list($password, $personal_salt) = explode(' ', $row['password']);
 				
+				if ($row['level'] == 0)
+					throw new Exception('Je account is niet actief. Klik op de activatielink in je e-mail.');
+				
+				list($password, $personal_salt) = explode(' ', $row['password']);
 				if (sha1($form->password->getPosted() . $this->config->item('system_salt') . $personal_salt) != $password)
 					throw new Exception('Ongeldig e-mail adres of wachtwoord.');
 				
@@ -34,6 +42,9 @@ class Login extends CI_Controller
 						'user_name'			=> $row['name'],
 						'user_id'			=> $row['player_id'],
 						'user_level'		=> $row['level'],
+						'user_team_id'		=> $row['team_id'],
+						'user_team'			=> $row['team_name'],
+						'user_poule_id'     => $row['poule_id'],
 						));
 				
 				// if password == 'Welkom01', the user is required to change his password
@@ -43,7 +54,7 @@ class Login extends CI_Controller
 					redirect('account');
 				}
 				
-				$data['feedback'] = success('Je bent nu ingelogd.');
+				$data['feedback'] = success('Je bent nu ingelogd als '.$this->session->userdata('user_name').'.');
 				
 			}
 			catch (Exception $e)
@@ -54,10 +65,14 @@ class Login extends CI_Controller
 		
 		$data['form'] = $form;
 		
+		if ($this->uri->segment(3) == 'new_email')
+			$data['feedback'] = success('Je email adres is gewijzigd. Daarom is je account uitgeschakeld.<br/>Er is een e-mail naar het nieuwe adres verstuurd met een activatie link, zodat je weer kunt inloggen.');
+		
 		$this->load->view('headerView');
 		$this->load->view('loginView', $data);
 		$this->load->view('footerView');
 	}
+	
 	
 }
 

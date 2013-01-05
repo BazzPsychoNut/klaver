@@ -10,7 +10,8 @@ class Poule extends CI_Model
 	protected $poule_id,
 	          $teams = array(),    // array of team_id => array(team_id, name, players)
 	          $matches = array(),  // array of Match objects
-	          $overview;           // overview array of all matches in the poule
+	          $overview = array(), // overview array of all matches in the poule
+	          $ranking = array();  // ranking array
 	
 	
 	function __construct()
@@ -20,6 +21,7 @@ class Poule extends CI_Model
 	    $CI =& get_instance();
 	    $this->db = $CI->db;
 	    $this->load = $CI->load;
+	    $this->session = $CI->session;
 	}
 	
 
@@ -34,6 +36,7 @@ class Poule extends CI_Model
         $this->fetchTeams();
         $this->fetchMatches();
         $this->createOverview();
+        $this->createRanking();
         
         return $this;
     }
@@ -76,7 +79,6 @@ class Poule extends CI_Model
     /**
      * create overview array for displaying the matches in the poule
      * used by view pouleOverviewView.php
-     * @throws Exception
      */
     protected function createOverview()
     {
@@ -99,6 +101,44 @@ class Poule extends CI_Model
     										  'team2' => $this->teams[$match->getIdTeam2()], 
     										  'score' => $score,
     										 );
+    	}
+    }
+    
+    /**
+     * create ranking array for displaying the ranking
+     * used by view pouleRankingView.php
+     */
+    protected function createRanking()
+    {
+    	$this->ranking = array();
+    	
+    	// the ranking looks like this:
+    	// rank team G W V voor tegen
+    	// Dit kan gewoon opgehaald worden als simpele fetch van teams :)
+    	$sql = "select * from teams where poule_id = ? order by score, team_id";
+    	$query = $this->db->query($sql, array((int) $this->poule_id));
+    	$result = $query->result_array();
+    	if (empty($result))
+    		throw new Exception('Error fetching team data for ranking - '.$this->db->_error_message());
+    	
+    	$rank = 1;
+    	$prevScore = -1;
+    	foreach ($result as $i => $row) 
+    	{
+    		// determine rank
+    		$rank = $row['score'] == $prevScore ? $rank : $i+1;
+    		$prevScore = $row['score'];
+    		
+    		// fill ranking array
+    		$this->ranking[] = array(
+    				'pos'   => $rank,
+    				'team'  => $row['name'] == $this->session->userdata('user_team') ? '<span class="this_is_me">'.$row['name'].'</span>' : $row['name'],
+    				'G' 	=> $row['played'],
+    				'W' 	=> $row['wins'],
+    				'V' 	=> $row['losses'],
+    				'voor'  => $row['score'],
+    				'tegen' => $row['score_against'],
+    				);
     	}
     }
     
@@ -207,6 +247,15 @@ class Poule extends CI_Model
     public function getOverview()
     {
     	return $this->overview;
+    }
+    
+    /**
+     * get array with the current ranking of teams in the poule
+     * @return array
+     */
+    public function getRanking()
+    {
+    	return $this->ranking;
     }
     
 

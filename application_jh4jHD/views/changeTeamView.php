@@ -1,7 +1,7 @@
 
-			<div id="change_team_container">
+			<div id="change_team_container" class="account_form">
 				<h2>Teamnaam wijzigen</h2>
-				<?php if (! empty($feedback)): ?>
+				<?php if (! empty($feedback) && $form->isPosted()): ?>
 				<?php echo $feedback; ?><br class="clear" />
 				<?php endif; ?>
 				<?php echo $form->render(); ?>

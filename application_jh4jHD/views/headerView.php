@@ -28,11 +28,11 @@ $base_url = $this->config->base_url();
 					<!-- I put the <li> directly against the </li> to get rid of the space between menu items -->
 					<li><a href="<?php echo $base_url; ?>">Home</a>
 					</li><li><a href="<?php echo $base_url; ?>overview">Overzicht</a>
+					<?php if ($this->session->userdata('user_logged_in') === true): ?>
 					</li><li><a href="<?php echo $base_url; ?>input_match">Partij invoeren</a>
 					</li><li><a href="<?php echo $base_url; ?>plan">Afspraak plannen</a>
-					<?php if ($this->session->userdata('user_logged_in') === true): ?>
 					</li><li><a href="<?php echo $base_url; ?>account">Mijn gegevens</a>
-					</li><li><a href="<?php echo $base_url; ?>logout">Uitloggen</a></li>
+					</li><li><a href="<?php echo $base_url; ?>logout">Uitloggen</a>
 					<?php else: ?>
 					</li><li><a href="<?php echo $base_url; ?>signup">Aanmelden</a>
 					</li><li><a href="<?php echo $base_url; ?>login">Inloggen</a>

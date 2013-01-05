@@ -298,9 +298,8 @@ abstract class Input
      */
     public function setId($id)
     {
-        // a name can end with [] but the id not
-        if (substr($id, -2) == '[]')
-            $id = substr($id, 0, -2);
+        // a name can contain [] (or [bla][][][]) but the id not
+        $id = str_replace(array('[',']'), '_', $id);
             
         if ($this->validate->htmlId($id))
         {
@@ -315,8 +314,8 @@ abstract class Input
      */
     protected function setName($name)
     {
-        // a name can end with '[]'
-        $testName = substr($name, -2) == '[]' ? substr($name, 0, -2) : $name;
+        // a name can contain [ and ], but nothing else
+        $testName = str_replace(array('[',']'), '_', $name);
         
         if ($this->validate->htmlId($testName))
         {

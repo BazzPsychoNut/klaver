@@ -22,3 +22,9 @@
 				</table>
 			</div>
 			
+			<?php echo $change_password_view; ?>
+			
+			<?php echo $change_account_view; ?>
+			
+			<?php echo $change_team_view; ?>
+			

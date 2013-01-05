@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Home extends CI_Controller 
+class Overview extends CI_Controller 
 {
 
 	public function index()
@@ -11,13 +11,13 @@ class Home extends CI_Controller
 	    foreach (array(1, 2) as $pouleId)
 	    {
 	    	$poule = $this->poule->init($pouleId);
-		    $rankData['ranking'] = $poule->getRanking();
-		    $rankData['poulename'] = $poule->getPouleName();
-		    $data['pouleRanking'.$pouleId] = $this->load->view('pouleRankingView', $rankData, true);
+		    $ovData['overview'] = $poule->getOverview();
+		    $ovData['poulename'] = $poule->getPouleName();
+		    $data['pouleOverview'.$pouleId] = $this->load->view('pouleOverviewView', $ovData, true);
 	    }
 	    
 	    $this->load->view('headerView');
-		$this->load->view('homeView', $data);
+		$this->load->view('overviewView', $data);
 		$this->load->view('footerView');
 	}
 }

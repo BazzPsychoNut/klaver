@@ -73,15 +73,13 @@ class Tests extends CI_Controller
 	    $this->unit->run($overview, 'is_array', 'Poule Overview');
 	    $this->unit->run(substr(key($overview), 0, 8), '1e ronde', 'Poule Overview key is round');
 	    
+	    // ranking
+	    $ranking = $poule->getRanking();
+	    $this->unit->run($ranking, 'is_array', 'Poule Ranking');
+	    $expected = array('pos', 'team', 'G', 'W', 'V', 'voor', 'tegen'); // header row
+	    $this->unit->run(array_keys($ranking[0]), $expected, 'Poule Ranking expected headers');
+	    
 	    $this->report('Poule unit tests');
-	}
-	
-	/**
-	 * test Signup
-	 */
-	public function signup()
-	{
-		
 	}
 	
 	/**
