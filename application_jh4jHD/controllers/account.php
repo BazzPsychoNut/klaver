@@ -239,7 +239,7 @@ class Account extends CI_Controller
 		        {
 		        	$this->db->insert('teams', array('name' => $form->team->getPosted()));
 		        	if ($this->db->affected_rows() == 0)
-		        		throw new Exception('Error bij opslaan teamnaam. '.$this->db->_error_message());
+		        		throw new Exception('Error bij opslaan teamnaam. - '.$this->db->_error_message());
 		        	
 		        	$data['feedback'] = success('De teamnaam is nu opgeslagen.');
 		        }
@@ -250,7 +250,7 @@ class Account extends CI_Controller
 			        $binds = array($form->team->getPosted(), $this->session->userdata('user_team_id'));
 			        $this->db->query($sql, $binds);
 			        if ($this->db->affected_rows() == 0)
-			            throw new Exception('Error bij wijzigen teamnaam. '.$this->db->_error_message());
+			            throw new Exception('Error bij wijzigen teamnaam. - '.$this->db->_error_message());
 			        
 			        $data['feedback'] = success('De teamnaam is nu veranderd.');
 		        }

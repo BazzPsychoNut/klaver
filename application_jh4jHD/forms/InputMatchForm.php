@@ -6,7 +6,8 @@ class InputMatchForm extends Form
 {
 	public 	$user_team,
 			$opponent_team,
-			$hands = array(),
+			$played_date,
+			$games = array(),
 			$totals = array(),
 			$submit;
 	
@@ -38,13 +39,21 @@ class InputMatchForm extends Form
 		$this->opponent_team = new Dropdown('opponent_team');
 		$this->opponent_team->setLabel('Tegenstanders')->appendOptions($options);
 		
+		// TODO rewrite DateInput to use jquery ui
+		$this->played_date = new DateInput('played_date', date('d-m-Y'));  
+		$this->played_date->setLabel('Datum gespeeld');
+		
 		// create hands input fields 
 		for ($i=1; $i<=16; $i++)
 		{
-			$this->hands[$i]['team1']['points'] = new TextInput("team1[points][$i]");
-			$this->hands[$i]['team1']['roem']   = new TextInput("team1[roem][$i]");
-			$this->hands[$i]['team2']['points'] = new TextInput("team2[points][$i]");
-			$this->hands[$i]['team2']['roem']   = new TextInput("team2[roem][$i]");
+			$this->games[$i]['wij']['points'] = new TextInput("wij_points_$i");
+			$this->games[$i]['wij']['points']->setMaxLength(3);
+			$this->games[$i]['wij']['roem'] = new TextInput("wij_roem_$i");
+			$this->games[$i]['wij']['roem']->setMaxLength(3);
+			$this->games[$i]['zij']['points'] = new TextInput("zij_points_$i");
+			$this->games[$i]['zij']['points']->setMaxLength(3);
+			$this->games[$i]['zij']['roem'] = new TextInput("zij_roem_$i");
+			$this->games[$i]['zij']['roem']->setMaxLength(3);
 		}
 		
 		// submit
@@ -63,16 +72,17 @@ class InputMatchForm extends Form
 		
 		$output .= $this->user_team->render().BRCLR;
 		$output .= $this->opponent_team->render().BRCLR;
+		//$output .= $this->played_date->render().BRCLR; // TODO build en uncomment
 		
 		// hands table of input fields
 		$output .= '<label>&nbsp;</label>'."\n";
 		$output .= '<table id="hands_input">'."\n";
 		$output .= "<thead>\n";
-		$output .= '<tr><td></td><th colspan="2">Wij</th><td></td><th colspan="2">Zij</th><td></td></tr>'."\n";
-		$output .= '<tr><td></td><td>punten</td><td>roem</td><td></td><td>punten</td><td>roem</td><td></td></tr>'."\n";
+		$output .= '  <tr><td></td><th colspan="2">Wij</th><td></td><th colspan="2" style="'.(! $this->isValid() ? 'text-align:left; padding-left:30px;' : '').'">Zij</th><td></td></tr>'."\n";
+		$output .= '  <tr><td></td><td>punten</td><td>roem</td><td></td><td>punten</td><td>roem</td><td></td></tr>'."\n";
 		$output .= "</thead>\n";
 		$output .= "<tbody>\n";
-		foreach ($this->hands as $i => $teams)
+		foreach ($this->games as $i => $teams)
 		{
 			$output .= '<tr class="'.($i % 4 == 1 && $i > 1 ? 'row_spacer' : '').'">'."\n";
 			$output .= '<th>'.$i.'</th>'."\n";
@@ -84,12 +94,11 @@ class InputMatchForm extends Form
 				}
 				$output .= '<td class="hands_input_spacer"></td>'."\n";
 			}
-			$output .= '<td class="hand_total_check"></td>'."\n";  // TODO plaats hier de invalidatie feedback als het hand totaal niet klopt
 			$output .= '</tr>'."\n";
 		}
 		$output .= "</tbody>\n";
 		$output .= "<tfoot>\n";
-		$output .= '<tr><td></td><td id="total_points_team1">0</td><td id="total_roem_team1">0</td><td></td><td id="total_points_team2">0</td><td id="total_roem_team2">0</td><td></td></tr>'."\n";
+		$output .= '  <tr><td></td><td id="total_points_wij">0</td><td id="total_roem_wij">0</td><td></td><td id="total_points_zij">0</td><td id="total_roem_zij">0</td><td></td></tr>'."\n";
 		$output .= "</tfoot>\n";
 		$output .= '</table>'."\n";
 		
@@ -111,7 +120,41 @@ class InputMatchForm extends Form
 		
 		$validate = new Validate();
 		
-		// TODO create form validation
+		// sum check
+		for ($i=1; $i<=16; $i++)
+		{
+		    $points = array($this->games[$i]['wij']['points']->getPosted(), $this->games[$i]['zij']['points']->getPosted());
+			$handTotal = (is_numeric($points[0]) ? $points[0] : 0) + (is_numeric($points[1]) ? $points[1] : 0);
+			if ($handTotal != 162)
+				$this->invalidate($this->games[$i]['zij']['roem'], 'Het totaal van deze hand is '.$handTotal.' ipv 162.');
+		}
+		
+		// valid values check
+		foreach ($this->games as $i => $teams)
+		{
+			foreach ($teams as $team => $inputs)
+			{
+			    // valid value for points
+				$points = $inputs['points']->getPosted();
+				if (! $validate->between($points, 0, 162))
+				{
+					if (! in_array(strtolower($points), array('nat', 'pit', 'n', 'p')))
+						$this->invalidate($inputs['points'], 'Ongeldige waarde.');
+				}
+				
+				// valid value for roem
+				$roem = $inputs['roem']->getPosted();
+				$roem = empty($roem) ? 0 : $roem;
+				if (! $validate->between($roem, 0, 900))  // theoretical max: 8*100 + 100 PIT
+					$this->invalidate($inputs['roem'], 'Ongeldige waarde.');
+				if ($roem % 10 != 0) // roem is always a product of 10
+				    $this->invalidate($inputs['roem'], 'Ongeldige waarde.');
+				
+				// NAT of PIT kan geen roem hebben
+				if (in_array(strtolower($points), array('nat', 'pit', 'n', 'p')) && $roem != 0)
+				    $this->invalidate($roem, 'Je kan geen roem hebben bij een NAT of PIT');
+			}
+		}
 
 		return $this->isValid;
 	}

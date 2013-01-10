@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.5.1
+-- version 3.4.5
 -- http://www.phpmyadmin.net
 --
 -- Machine: localhost
--- Genereertijd: 27 dec 2012 om 20:44
--- Serverversie: 5.5.24-log
--- PHP-versie: 5.4.3
+-- Genereertijd: 07 jan 2013 om 22:49
+-- Serverversie: 5.5.16
+-- PHP-Versie: 5.3.8
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Databank: `klaver`
+-- Database: `klaver`
 --
 
 -- --------------------------------------------------------
@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `games` (
   `roem_team2` int(11) NOT NULL DEFAULT '0',
   `special_team1` varchar(3) DEFAULT NULL,
   `special_team2` varchar(3) DEFAULT NULL,
+  `owner_id` int(11) NOT NULL,
   PRIMARY KEY (`game_id`),
   KEY `match_id` (`match_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
@@ -154,52 +155,58 @@ INSERT INTO `matches_backup` (`match_id`, `round`, `poule_id`, `scheduled_date`,
 
 CREATE TABLE IF NOT EXISTS `players` (
   `player_id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `password` char(32) NOT NULL,
-  `email` text NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
   `level` tinyint(4) NOT NULL DEFAULT '1',
-  `team_id` int(11) NOT NULL,
+  `team_id` int(11) DEFAULT NULL,
+  `confirmation` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`player_id`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `confirmation` (`confirmation`),
   KEY `team_id` (`team_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=33 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=35 ;
 
 --
 -- Gegevens worden uitgevoerd voor tabel `players`
 --
 
-INSERT INTO `players` (`player_id`, `name`, `password`, `email`, `level`, `team_id`) VALUES
-(1, 'dummy1', 'p', 'e', 1, 1),
-(2, 'dummy2', 'p', 'e', 1, 1),
-(3, 'dummy3', 'p', 'e', 1, 2),
-(4, 'dummy4', 'p', 'e', 1, 2),
-(5, 'dummy5', 'p', 'e', 1, 3),
-(6, 'dummy6', 'p', 'e', 1, 3),
-(7, 'dummy7', 'p', 'e', 1, 4),
-(8, 'dummy8', 'p', 'e', 1, 4),
-(9, 'dummy9', 'p', 'e', 1, 5),
-(10, 'dummy10', 'p', 'e', 1, 5),
-(11, 'dummy11', 'p', 'e', 1, 6),
-(12, 'dummy12', 'p', 'e', 1, 6),
-(13, 'dummy13', 'p', 'e', 1, 7),
-(14, 'dummy14', 'p', 'e', 1, 7),
-(15, 'dummy15', 'p', 'e', 1, 8),
-(16, 'dummy16', 'p', 'e', 1, 8),
-(17, 'dummy17', 'p', 'e', 1, 9),
-(18, 'dummy18', 'p', 'e', 1, 9),
-(19, 'dummy19', 'p', 'e', 1, 10),
-(20, 'dummy20', 'p', 'e', 1, 10),
-(21, 'dummy21', 'p', 'e', 1, 11),
-(22, 'dummy22', 'p', 'e', 1, 11),
-(23, 'dummy23', 'p', 'e', 1, 12),
-(24, 'dummy24', 'p', 'e', 1, 12),
-(25, 'dummy25', 'p', 'e', 1, 13),
-(26, 'dummy26', 'p', 'e', 1, 13),
-(27, 'dummy27', 'p', 'e', 1, 14),
-(28, 'dummy28', 'p', 'e', 1, 14),
-(29, 'dummy29', 'p', 'e', 1, 15),
-(30, 'dummy30', 'p', 'e', 1, 15),
-(31, 'dummy31', 'p', 'e', 1, 16),
-(32, 'dummy32', 'p', 'e', 1, 16);
+INSERT INTO `players` (`player_id`, `name`, `password`, `email`, `level`, `team_id`, `confirmation`) VALUES
+(1, 'dummy1', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy1@basderuiter.nl', 1, 1, NULL),
+(2, 'dummy2', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy2@basderuiter.nl', 1, 1, NULL),
+(3, 'dummy3', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy3@basderuiter.nl', 1, 2, NULL),
+(4, 'dummy4', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy4@basderuiter.nl', 1, 2, NULL),
+(5, 'dummy5', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy5@basderuiter.nl', 1, 3, NULL),
+(6, 'dummy6', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy6@basderuiter.nl', 1, 3, NULL),
+(7, 'dummy7', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy7@basderuiter.nl', 1, 4, NULL),
+(8, 'dummy8', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy8@basderuiter.nl', 1, 4, NULL),
+(9, 'dummy9', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy9@basderuiter.nl', 1, 5, NULL),
+(10, 'dummy10', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy10@basderuiter.nl', 1, 5, NULL),
+(11, 'dummy11', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy11@basderuiter.nl', 1, 6, NULL),
+(12, 'dummy12', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy12@basderuiter.nl', 1, 6, NULL),
+(13, 'dummy13', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy13@basderuiter.nl', 1, 7, NULL),
+(14, 'dummy14', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy14@basderuiter.nl', 1, 7, NULL),
+(15, 'dummy15', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy15@basderuiter.nl', 1, 8, NULL),
+(16, 'dummy16', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy16@basderuiter.nl', 1, 8, NULL),
+(17, 'dummy17', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy17@basderuiter.nl', 1, 9, NULL),
+(18, 'dummy18', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy18@basderuiter.nl', 1, 9, NULL),
+(19, 'dummy19', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy19@basderuiter.nl', 1, 10, NULL),
+(20, 'dummy20', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy20@basderuiter.nl', 1, 10, NULL),
+(21, 'dummy21', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy21@basderuiter.nl', 1, 11, NULL),
+(22, 'dummy22', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy22@basderuiter.nl', 1, 11, NULL),
+(23, 'Bas de Ruiter', '7fb4fb28e0edd752a53cee79f57aa9646ca9738a NZGCaoNboi', 'deruiterb@gmail.com', 1, 12, NULL),
+(24, 'dummy24', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy24@basderuiter.nl', 1, 12, NULL),
+(25, 'dummy25', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy25@basderuiter.nl', 1, 13, NULL),
+(26, 'dummy26', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy26@basderuiter.nl', 1, 13, NULL),
+(27, 'dummy27', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy27@basderuiter.nl', 1, 14, NULL),
+(28, 'dummy28', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy28@basderuiter.nl', 1, 14, NULL),
+(29, 'dummy29', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy29@basderuiter.nl', 1, 15, NULL),
+(30, 'dummy30', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy30@basderuiter.nl', 1, 15, NULL),
+(31, 'dummy31', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy31@basderuiter.nl', 1, 16, NULL),
+(32, 'dummy32', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'dummy32@basderuiter.nl', 1, 16, NULL),
+(33, 'Test', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'Test@basderuiter.nl', 1, 17, NULL),
+(34, 'Test Teamloos', '6e069b5b87a0977be4cc786914fe98edda05d587 ipCdFd2Jfj', 'Test Teamloos@basderuiter.nl', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -230,35 +237,37 @@ INSERT INTO `poules` (`poule_id`, `name`) VALUES
 CREATE TABLE IF NOT EXISTS `teams` (
   `team_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text NOT NULL,
-  `poule_id` int(11) NOT NULL,
+  `poule_id` int(11) DEFAULT NULL,
   `played` tinyint(4) NOT NULL DEFAULT '0',
   `wins` tinyint(4) NOT NULL DEFAULT '0',
   `losses` tinyint(4) NOT NULL DEFAULT '0',
   `score` tinyint(4) NOT NULL DEFAULT '0',
+  `score_against` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`team_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
 
 --
 -- Gegevens worden uitgevoerd voor tabel `teams`
 --
 
-INSERT INTO `teams` (`team_id`, `name`, `poule_id`, `played`, `wins`, `losses`, `score`) VALUES
-(1, 'Team 1', 1, 0, 0, 0, 0),
-(2, 'Team 2', 1, 0, 0, 0, 0),
-(3, 'Team 3', 1, 0, 0, 0, 0),
-(4, 'Team 4', 1, 0, 0, 0, 0),
-(5, 'Team 5', 1, 0, 0, 0, 0),
-(6, 'Team 6', 1, 0, 0, 0, 0),
-(7, 'Team 7', 1, 0, 0, 0, 0),
-(8, 'Team 8', 1, 0, 0, 0, 0),
-(9, 'Team 9', 2, 0, 0, 0, 0),
-(10, 'Team 10', 2, 0, 0, 0, 0),
-(11, 'Team 11', 2, 0, 0, 0, 0),
-(12, 'Team 12', 2, 0, 0, 0, 0),
-(13, 'Team 13', 2, 0, 0, 0, 0),
-(14, 'Team 14', 2, 0, 0, 0, 0),
-(15, 'Team 15', 2, 0, 0, 0, 0),
-(16, 'Team 16', 2, 0, 0, 0, 0);
+INSERT INTO `teams` (`team_id`, `name`, `poule_id`, `played`, `wins`, `losses`, `score`, `score_against`) VALUES
+(1, 'Team 1', 1, 0, 0, 0, 0, 0),
+(2, 'Team 2', 1, 0, 0, 0, 0, 0),
+(3, 'Team 3', 1, 0, 0, 0, 0, 0),
+(4, 'Team 4', 1, 0, 0, 0, 0, 0),
+(5, 'Team 5', 1, 0, 0, 0, 0, 0),
+(6, 'Team 6', 1, 0, 0, 0, 0, 0),
+(7, 'Team 7', 1, 0, 0, 0, 0, 0),
+(8, 'Team 8', 1, 0, 0, 0, 0, 0),
+(9, 'Team 9', 2, 0, 0, 0, 0, 0),
+(10, 'Team 10', 2, 0, 0, 0, 0, 0),
+(11, 'Team 11', 2, 0, 0, 0, 0, 0),
+(12, 'Team 12', 2, 0, 0, 0, 0, 0),
+(13, 'Team 13', 2, 0, 0, 0, 0, 0),
+(14, 'Team 14', 2, 0, 0, 0, 0, 0),
+(15, 'Team 15', 2, 0, 0, 0, 0, 0),
+(16, 'Team 16', 2, 0, 0, 0, 0, 0),
+(17, 'De raggende mannen', NULL, 0, 0, 0, 0, 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
