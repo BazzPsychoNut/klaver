@@ -95,11 +95,11 @@ class Poule extends CI_Model
     	// columns: the matches to play in that round
     	foreach ($this->matches as $match)
     	{
-    		$round = $match->getRound().'e ronde. '.format_date($match->getScheduledDate());
-    		$score = $match->getScoreTeam1() > 0 && $match->getScoreTeam2() > 0 ? $match->getScoreTeam1() . ' - ' . $match->getScoreTeam2() : 'nog niet gespeeld';
+    		$round  = $match->getRound().'e ronde. '.format_date($match->getScheduledDate());
+    		$points = $match->getPointsTeam1() > 0 && $match->getPointsTeam2() > 0 ? $match->getPointsTeam1() . ' - ' . $match->getPointsTeam2() : 'nog niet gespeeld';
     		$this->overview[$round][] = array('team1' => $this->teams[$match->getIdTeam1()],  // array(team_id, name, players)
     										  'team2' => $this->teams[$match->getIdTeam2()], 
-    										  'score' => $score,
+    										  'points' => $points,
     										 );
     	}
     }
@@ -115,19 +115,19 @@ class Poule extends CI_Model
     	// the ranking looks like this:
     	// rank team G W V voor tegen
     	// Dit kan gewoon opgehaald worden als simpele fetch van teams :)
-    	$sql = "select * from teams where poule_id = ? order by score, team_id";
+    	$sql = "select * from teams where poule_id = ? order by points, team_id";
     	$query = $this->db->query($sql, array((int) $this->poule_id));
     	$result = $query->result_array();
     	if (empty($result))
     		throw new Exception('Error fetching team data for ranking - '.$this->db->_error_message());
     	
     	$rank = 1;
-    	$prevScore = -1;
+    	$prevPoints = -1;
     	foreach ($result as $i => $row) 
     	{
     		// determine rank
-    		$rank = $row['score'] == $prevScore ? $rank : $i+1;
-    		$prevScore = $row['score'];
+    		$rank = $row['points'] == $prevPoints ? $rank : $i+1;
+    		$prevPoints = $row['points'];
     		
     		// fill ranking array
     		$this->ranking[] = array(
@@ -136,8 +136,8 @@ class Poule extends CI_Model
     				'G' 	=> $row['played'],
     				'W' 	=> $row['wins'],
     				'V' 	=> $row['losses'],
-    				'voor'  => $row['score'],
-    				'tegen' => $row['score_against'],
+    				'voor'  => $row['points'],
+    				'tegen' => $row['points_against'],
     				);
     	}
     }
@@ -189,7 +189,7 @@ class Poule extends CI_Model
         $this->backup->database();
         
         // then delete the matches for this poule
-        $this->db->query("delete from matches where poule_id = ?", array($this->poule_id));
+        $this->db->delete('matches', array('poule_id' => $this->poule_id));
         
         // now create the Matches
         // It is possible with some complicated trickery to first create the classes and then later 
@@ -198,9 +198,16 @@ class Poule extends CI_Model
         {
             foreach ($t1matches as $team2 => $round)
             {
-                // insert round, poule_id, scheduled_date, id_team1, id_team2
-                $sql = "insert into matches (round, poule_id, scheduled_date, id_team1, id_team2) values (?, ?, ?, ?, ?)";
-                $this->db->query($sql, array($round, $this->poule_id, $dates[$round], $team1, $team2));
+            	$set = array(
+            			'round' => $round,
+            			'poule_id' => $this->poule_id,
+            			'scheduled_date' => $dates[$round],
+            			'id_team1' => $team1,
+            			'id_team2' => $team2,
+            			);
+            	$this->db->insert('matches', $set);
+            	if ($this->db->affected_rows() == 0)
+            		throw new Exception('Error bij aanmaken partijen. - '.$this->db->_error_message());
             }
         }
         

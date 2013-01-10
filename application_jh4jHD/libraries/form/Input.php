@@ -663,7 +663,7 @@ abstract class Input
      * set $disabled
      * @param value or false $disabled
      */
-    public function setDisabled($disabled)
+    public function setDisabled($disabled = 'disabled')
     {
         if ($this->validate->inArray($disabled, array('disabled','readonly')))
         {
@@ -676,7 +676,7 @@ abstract class Input
 	/**
      * @param boolean $hidden
      */
-    public function setHidden($hidden)
+    public function setHidden($hidden = true)
     {
         if ($this->validate->isBoolean($hidden))
         {

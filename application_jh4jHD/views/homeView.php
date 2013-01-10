@@ -7,7 +7,7 @@
 					Ook dit seizoen dreigt weer vol spanning en amusement te zitten.
 				</p>
 				<p>
-					Via deze site kunnen deelnemers de stand bekijken, scores uploaden en afspraken plannen.<br/>
+					Via deze site kunnen deelnemers de stand bekijken, partijen uploaden en afspraken plannen.<br/>
 					Veel succes!
 				</p>
 			</div>

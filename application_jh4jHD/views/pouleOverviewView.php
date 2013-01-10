@@ -7,7 +7,7 @@
 			<th>
 				<?php echo $round; ?>
 			</th>
-			<?php foreach ($matches as $match): // $match is array(team1 => array(), team2 => array(), score => score) ?>
+			<?php foreach ($matches as $match): // $match is array(team1 => array(), team2 => array(), points => points) ?>
 			<td class="<?php echo in_array($this->session->userdata('user_name'), array($match['team1']['player1'], $match['team1']['player2'], $match['team2']['player1'], $match['team2']['player2'])) ? 'my_match' : ''; ?>">
 				<table>
 					<tr>
@@ -26,8 +26,8 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="3" class="score">
-							<?php echo $match['score'] ?>
+						<td colspan="3" class="points">
+							<?php echo $match['points'] ?>
 						</td>
 					</tr>
 				</table>

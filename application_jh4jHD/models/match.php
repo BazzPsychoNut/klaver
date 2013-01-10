@@ -14,8 +14,8 @@ class Match extends CI_Model
     		  $played_date,
     		  $id_team1,
     		  $id_team2,
-    		  $score_team1,
-    		  $score_team2;
+    		  $points_team1,
+    		  $points_team2;
     
 
     
@@ -100,19 +100,19 @@ class Match extends CI_Model
     }
 
 	/**
-     * @return int $score_team1
+     * @return int $points_team1
      */
-    public function getScoreTeam1()
+    public function getPointsTeam1()
     {
-        return $this->score_team1;
+        return $this->points_team1;
     }
 
 	/**
-     * @return int $score_team2
+     * @return int $points_team2
      */
-    public function getScoreTeam2()
+    public function getPointsTeam2()
     {
-        return $this->score_team2;
+        return $this->points_team2;
     }
 
     

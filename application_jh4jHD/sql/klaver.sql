@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.5
+-- version 3.5.1
 -- http://www.phpmyadmin.net
 --
 -- Machine: localhost
--- Genereertijd: 07 jan 2013 om 22:49
--- Serverversie: 5.5.16
--- PHP-Versie: 5.3.8
+-- Genereertijd: 10 jan 2013 om 21:32
+-- Serverversie: 5.5.24-log
+-- PHP-versie: 5.4.3
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `klaver`
+-- Databank: `klaver`
 --
 
 -- --------------------------------------------------------
@@ -27,8 +27,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `games` (
-  `game_id` int(11) NOT NULL AUTO_INCREMENT,
+  `game` tinyint(4) NOT NULL,
   `match_id` int(11) NOT NULL,
+  `id_team1` int(11) NOT NULL,
+  `id_team2` int(11) NOT NULL,
   `points_team1` int(11) NOT NULL DEFAULT '0',
   `points_team2` int(11) NOT NULL DEFAULT '0',
   `roem_team1` int(11) NOT NULL DEFAULT '0',
@@ -36,9 +38,31 @@ CREATE TABLE IF NOT EXISTS `games` (
   `special_team1` varchar(3) DEFAULT NULL,
   `special_team2` varchar(3) DEFAULT NULL,
   `owner_id` int(11) NOT NULL,
-  PRIMARY KEY (`game_id`),
+  PRIMARY KEY (`game`),
   KEY `match_id` (`match_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Gegevens worden uitgevoerd voor tabel `games`
+--
+
+INSERT INTO `games` (`game`, `match_id`, `id_team1`, `id_team2`, `points_team1`, `points_team2`, `roem_team1`, `roem_team2`, `special_team1`, `special_team2`, `owner_id`) VALUES
+(1, 31, 9, 12, 162, 0, 20, 0, NULL, 'N', 23),
+(2, 31, 9, 12, 62, 100, 20, 0, NULL, NULL, 23),
+(3, 31, 9, 12, 162, 0, 0, 0, NULL, 'N', 23),
+(4, 31, 9, 12, 62, 100, 0, 0, NULL, NULL, 23),
+(5, 31, 9, 12, 84, 78, 30, 0, NULL, NULL, 23),
+(6, 31, 9, 12, 162, 0, 100, 0, NULL, 'P', 23),
+(7, 31, 9, 12, 64, 98, 20, 0, NULL, NULL, 23),
+(8, 31, 9, 12, 142, 20, 30, 20, NULL, NULL, 23),
+(9, 31, 9, 12, 60, 102, 0, 0, NULL, NULL, 23),
+(10, 31, 9, 12, 62, 100, 0, 0, NULL, NULL, 23),
+(11, 31, 9, 12, 62, 100, 0, 0, NULL, NULL, 23),
+(12, 31, 9, 12, 128, 34, 0, 30, NULL, NULL, 23),
+(13, 31, 9, 12, 0, 162, 0, 100, 'P', NULL, 23),
+(14, 31, 9, 12, 128, 34, 0, 0, NULL, NULL, 23),
+(15, 31, 9, 12, 137, 25, 0, 0, NULL, NULL, 23),
+(16, 31, 9, 12, 37, 125, 0, 0, NULL, NULL, 23);
 
 -- --------------------------------------------------------
 
@@ -54,8 +78,8 @@ CREATE TABLE IF NOT EXISTS `matches` (
   `played_date` date DEFAULT NULL,
   `id_team1` int(11) NOT NULL,
   `id_team2` int(11) NOT NULL,
-  `score_team1` int(11) DEFAULT NULL,
-  `score_team2` int(11) DEFAULT NULL,
+  `points_team1` int(11) NOT NULL DEFAULT '0',
+  `points_team2` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`match_id`),
   KEY `team1_id` (`id_team1`,`id_team2`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=57 ;
@@ -64,63 +88,63 @@ CREATE TABLE IF NOT EXISTS `matches` (
 -- Gegevens worden uitgevoerd voor tabel `matches`
 --
 
-INSERT INTO `matches` (`match_id`, `round`, `poule_id`, `scheduled_date`, `played_date`, `id_team1`, `id_team2`, `score_team1`, `score_team2`) VALUES
-(1, 1, 1, '2013-01-28', NULL, 1, 2, NULL, NULL),
-(2, 2, 1, '2013-02-18', NULL, 1, 3, NULL, NULL),
-(3, 3, 1, '2013-03-11', NULL, 1, 4, NULL, NULL),
-(4, 4, 1, '2013-04-01', NULL, 1, 5, NULL, NULL),
-(5, 5, 1, '2013-04-22', NULL, 1, 6, NULL, NULL),
-(6, 6, 1, '2013-05-13', NULL, 1, 7, NULL, NULL),
-(7, 7, 1, '2013-06-03', NULL, 1, 8, NULL, NULL),
-(8, 3, 1, '2013-03-11', NULL, 2, 3, NULL, NULL),
-(9, 4, 1, '2013-04-01', NULL, 2, 4, NULL, NULL),
-(10, 5, 1, '2013-04-22', NULL, 2, 5, NULL, NULL),
-(11, 6, 1, '2013-05-13', NULL, 2, 6, NULL, NULL),
-(12, 7, 1, '2013-06-03', NULL, 2, 7, NULL, NULL),
-(13, 8, 1, '2013-06-24', NULL, 2, 8, NULL, NULL),
-(14, 5, 1, '2013-04-22', NULL, 3, 4, NULL, NULL),
-(15, 6, 1, '2013-05-13', NULL, 3, 5, NULL, NULL),
-(16, 7, 1, '2013-06-03', NULL, 3, 6, NULL, NULL),
-(17, 8, 1, '2013-06-24', NULL, 3, 7, NULL, NULL),
-(18, 1, 1, '2013-01-28', NULL, 3, 8, NULL, NULL),
-(19, 7, 1, '2013-06-03', NULL, 4, 5, NULL, NULL),
-(20, 8, 1, '2013-06-24', NULL, 4, 6, NULL, NULL),
-(21, 1, 1, '2013-01-28', NULL, 4, 7, NULL, NULL),
-(22, 2, 1, '2013-02-18', NULL, 4, 8, NULL, NULL),
-(23, 1, 1, '2013-01-28', NULL, 5, 6, NULL, NULL),
-(24, 2, 1, '2013-02-18', NULL, 5, 7, NULL, NULL),
-(25, 3, 1, '2013-03-11', NULL, 5, 8, NULL, NULL),
-(26, 3, 1, '2013-03-11', NULL, 6, 7, NULL, NULL),
-(27, 4, 1, '2013-04-01', NULL, 6, 8, NULL, NULL),
-(28, 5, 1, '2013-04-22', NULL, 7, 8, NULL, NULL),
-(29, 1, 2, '2013-01-28', NULL, 9, 10, NULL, NULL),
-(30, 2, 2, '2013-02-18', NULL, 9, 11, NULL, NULL),
-(31, 3, 2, '2013-03-11', NULL, 9, 12, NULL, NULL),
-(32, 4, 2, '2013-04-01', NULL, 9, 13, NULL, NULL),
-(33, 5, 2, '2013-04-22', NULL, 9, 14, NULL, NULL),
-(34, 6, 2, '2013-05-13', NULL, 9, 15, NULL, NULL),
-(35, 7, 2, '2013-06-03', NULL, 9, 16, NULL, NULL),
-(36, 3, 2, '2013-03-11', NULL, 10, 11, NULL, NULL),
-(37, 4, 2, '2013-04-01', NULL, 10, 12, NULL, NULL),
-(38, 5, 2, '2013-04-22', NULL, 10, 13, NULL, NULL),
-(39, 6, 2, '2013-05-13', NULL, 10, 14, NULL, NULL),
-(40, 7, 2, '2013-06-03', NULL, 10, 15, NULL, NULL),
-(41, 8, 2, '2013-06-24', NULL, 10, 16, NULL, NULL),
-(42, 5, 2, '2013-04-22', NULL, 11, 12, NULL, NULL),
-(43, 6, 2, '2013-05-13', NULL, 11, 13, NULL, NULL),
-(44, 7, 2, '2013-06-03', NULL, 11, 14, NULL, NULL),
-(45, 8, 2, '2013-06-24', NULL, 11, 15, NULL, NULL),
-(46, 1, 2, '2013-01-28', NULL, 11, 16, NULL, NULL),
-(47, 7, 2, '2013-06-03', NULL, 12, 13, NULL, NULL),
-(48, 8, 2, '2013-06-24', NULL, 12, 14, NULL, NULL),
-(49, 1, 2, '2013-01-28', NULL, 12, 15, NULL, NULL),
-(50, 2, 2, '2013-02-18', NULL, 12, 16, NULL, NULL),
-(51, 1, 2, '2013-01-28', NULL, 13, 14, NULL, NULL),
-(52, 2, 2, '2013-02-18', NULL, 13, 15, NULL, NULL),
-(53, 3, 2, '2013-03-11', NULL, 13, 16, NULL, NULL),
-(54, 3, 2, '2013-03-11', NULL, 14, 15, NULL, NULL),
-(55, 4, 2, '2013-04-01', NULL, 14, 16, NULL, NULL),
-(56, 5, 2, '2013-04-22', NULL, 15, 16, NULL, NULL);
+INSERT INTO `matches` (`match_id`, `round`, `poule_id`, `scheduled_date`, `played_date`, `id_team1`, `id_team2`, `points_team1`, `points_team2`) VALUES
+(1, 1, 1, '2013-01-28', NULL, 1, 2, 0, 0),
+(2, 2, 1, '2013-02-18', NULL, 1, 3, 0, 0),
+(3, 3, 1, '2013-03-11', NULL, 1, 4, 0, 0),
+(4, 4, 1, '2013-04-01', NULL, 1, 5, 0, 0),
+(5, 5, 1, '2013-04-22', NULL, 1, 6, 0, 0),
+(6, 6, 1, '2013-05-13', NULL, 1, 7, 0, 0),
+(7, 7, 1, '2013-06-03', NULL, 1, 8, 0, 0),
+(8, 3, 1, '2013-03-11', NULL, 2, 3, 0, 0),
+(9, 4, 1, '2013-04-01', NULL, 2, 4, 0, 0),
+(10, 5, 1, '2013-04-22', NULL, 2, 5, 0, 0),
+(11, 6, 1, '2013-05-13', NULL, 2, 6, 0, 0),
+(12, 7, 1, '2013-06-03', NULL, 2, 7, 0, 0),
+(13, 8, 1, '2013-06-24', NULL, 2, 8, 0, 0),
+(14, 5, 1, '2013-04-22', NULL, 3, 4, 0, 0),
+(15, 6, 1, '2013-05-13', NULL, 3, 5, 0, 0),
+(16, 7, 1, '2013-06-03', NULL, 3, 6, 0, 0),
+(17, 8, 1, '2013-06-24', NULL, 3, 7, 0, 0),
+(18, 1, 1, '2013-01-28', NULL, 3, 8, 0, 0),
+(19, 7, 1, '2013-06-03', NULL, 4, 5, 0, 0),
+(20, 8, 1, '2013-06-24', NULL, 4, 6, 0, 0),
+(21, 1, 1, '2013-01-28', NULL, 4, 7, 0, 0),
+(22, 2, 1, '2013-02-18', NULL, 4, 8, 0, 0),
+(23, 1, 1, '2013-01-28', NULL, 5, 6, 0, 0),
+(24, 2, 1, '2013-02-18', NULL, 5, 7, 0, 0),
+(25, 3, 1, '2013-03-11', NULL, 5, 8, 0, 0),
+(26, 3, 1, '2013-03-11', NULL, 6, 7, 0, 0),
+(27, 4, 1, '2013-04-01', NULL, 6, 8, 0, 0),
+(28, 5, 1, '2013-04-22', NULL, 7, 8, 0, 0),
+(29, 1, 2, '2013-01-28', NULL, 9, 10, 0, 0),
+(30, 2, 2, '2013-02-18', NULL, 9, 11, 0, 0),
+(31, 3, 2, '2013-03-11', '2013-01-01', 9, 12, 1514, 1078),
+(32, 4, 2, '2013-04-01', NULL, 9, 13, 0, 0),
+(33, 5, 2, '2013-04-22', NULL, 9, 14, 0, 0),
+(34, 6, 2, '2013-05-13', NULL, 9, 15, 0, 0),
+(35, 7, 2, '2013-06-03', NULL, 9, 16, 0, 0),
+(36, 3, 2, '2013-03-11', NULL, 10, 11, 0, 0),
+(37, 4, 2, '2013-04-01', NULL, 10, 12, 0, 0),
+(38, 5, 2, '2013-04-22', NULL, 10, 13, 0, 0),
+(39, 6, 2, '2013-05-13', NULL, 10, 14, 0, 0),
+(40, 7, 2, '2013-06-03', NULL, 10, 15, 0, 0),
+(41, 8, 2, '2013-06-24', NULL, 10, 16, 0, 0),
+(42, 5, 2, '2013-04-22', NULL, 11, 12, 0, 0),
+(43, 6, 2, '2013-05-13', NULL, 11, 13, 0, 0),
+(44, 7, 2, '2013-06-03', NULL, 11, 14, 0, 0),
+(45, 8, 2, '2013-06-24', NULL, 11, 15, 0, 0),
+(46, 1, 2, '2013-01-28', NULL, 11, 16, 0, 0),
+(47, 7, 2, '2013-06-03', NULL, 12, 13, 0, 0),
+(48, 8, 2, '2013-06-24', NULL, 12, 14, 0, 0),
+(49, 1, 2, '2013-01-28', NULL, 12, 15, 0, 0),
+(50, 2, 2, '2013-02-18', NULL, 12, 16, 0, 0),
+(51, 1, 2, '2013-01-28', NULL, 13, 14, 0, 0),
+(52, 2, 2, '2013-02-18', NULL, 13, 15, 0, 0),
+(53, 3, 2, '2013-03-11', NULL, 13, 16, 0, 0),
+(54, 3, 2, '2013-03-11', NULL, 14, 15, 0, 0),
+(55, 4, 2, '2013-04-01', NULL, 14, 16, 0, 0),
+(56, 5, 2, '2013-04-22', NULL, 15, 16, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -241,8 +265,8 @@ CREATE TABLE IF NOT EXISTS `teams` (
   `played` tinyint(4) NOT NULL DEFAULT '0',
   `wins` tinyint(4) NOT NULL DEFAULT '0',
   `losses` tinyint(4) NOT NULL DEFAULT '0',
-  `score` tinyint(4) NOT NULL DEFAULT '0',
-  `score_against` tinyint(4) NOT NULL DEFAULT '0',
+  `points` int(4) NOT NULL DEFAULT '0',
+  `points_against` int(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`team_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
 
@@ -250,7 +274,7 @@ CREATE TABLE IF NOT EXISTS `teams` (
 -- Gegevens worden uitgevoerd voor tabel `teams`
 --
 
-INSERT INTO `teams` (`team_id`, `name`, `poule_id`, `played`, `wins`, `losses`, `score`, `score_against`) VALUES
+INSERT INTO `teams` (`team_id`, `name`, `poule_id`, `played`, `wins`, `losses`, `points`, `points_against`) VALUES
 (1, 'Team 1', 1, 0, 0, 0, 0, 0),
 (2, 'Team 2', 1, 0, 0, 0, 0, 0),
 (3, 'Team 3', 1, 0, 0, 0, 0, 0),
@@ -259,10 +283,10 @@ INSERT INTO `teams` (`team_id`, `name`, `poule_id`, `played`, `wins`, `losses`, 
 (6, 'Team 6', 1, 0, 0, 0, 0, 0),
 (7, 'Team 7', 1, 0, 0, 0, 0, 0),
 (8, 'Team 8', 1, 0, 0, 0, 0, 0),
-(9, 'Team 9', 2, 0, 0, 0, 0, 0),
+(9, 'Team 9', 2, 1, 1, 0, 1514, 1078),
 (10, 'Team 10', 2, 0, 0, 0, 0, 0),
 (11, 'Team 11', 2, 0, 0, 0, 0, 0),
-(12, 'Team 12', 2, 0, 0, 0, 0, 0),
+(12, 'Team 12', 2, 1, 0, 1, 1078, 1514),
 (13, 'Team 13', 2, 0, 0, 0, 0, 0),
 (14, 'Team 14', 2, 0, 0, 0, 0, 0),
 (15, 'Team 15', 2, 0, 0, 0, 0, 0),

@@ -8,12 +8,13 @@ class Overview extends CI_Controller
 	    //$this->poule = new Poule(); // for editor
 	    
 		// fetch the pouleOverviewViews as string in $data to pass on to homeView
-	    foreach (array(1, 2) as $pouleId)
+		$poules = $this->session->userdata('user_poule_id') == 1 ? array(1,2) : array(2,1); // start with own poule
+	    foreach ($poules as $pouleId)
 	    {
 	    	$poule = $this->poule->init($pouleId);
 		    $ovData['overview'] = $poule->getOverview();
 		    $ovData['poulename'] = $poule->getPouleName();
-		    $data['pouleOverview'.$pouleId] = $this->load->view('pouleOverviewView', $ovData, true);
+		    $data['pouleOverview'][$pouleId] = $this->load->view('pouleOverviewView', $ovData, true);
 	    }
 	    
 	    $this->load->view('headerView');

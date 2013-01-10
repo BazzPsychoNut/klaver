@@ -9,6 +9,7 @@ class InputMatchForm extends Form
 			$played_date,
 			$games = array(),
 			$totals = array(),
+			$load_match,
 			$submit;
 	
 	
@@ -17,6 +18,7 @@ class InputMatchForm extends Form
 	{
 		$CI =& get_instance();
 		$this->db = $CI->db;
+		$this->session = $CI->session;
 		
 		$this->name = empty($name) ? $name : __CLASS__;
 		
@@ -39,7 +41,6 @@ class InputMatchForm extends Form
 		$this->opponent_team = new Dropdown('opponent_team');
 		$this->opponent_team->setLabel('Tegenstanders')->appendOptions($options);
 		
-		// TODO rewrite DateInput to use jquery ui
 		$this->played_date = new DateInput('played_date', date('d-m-Y'));  
 		$this->played_date->setLabel('Datum gespeeld');
 		
@@ -56,9 +57,16 @@ class InputMatchForm extends Form
 			$this->games[$i]['zij']['roem']->setMaxLength(3);
 		}
 		
+		// load submit
+		$this->load_match = new SubmitButton('load_match', 'Partij openen');
+		$this->load_match->setLabel('&nbsp;')->addStyle('margin-top:10px');
+		
 		// submit
 		$this->submit = new SubmitButton('input_match', 'Opslaan');
 		$this->submit->setLabel('&nbsp;')->addStyle('margin-top:20px');
+		
+		if ($this->load_match->isPosted())
+			$this->set_match_details($this->session->userdata('user_team_id'), $this->opponent_team->getPosted());
 	}
 	
 	/**
@@ -72,37 +80,45 @@ class InputMatchForm extends Form
 		
 		$output .= $this->user_team->render().BRCLR;
 		$output .= $this->opponent_team->render().BRCLR;
-		//$output .= $this->played_date->render().BRCLR; // TODO build en uncomment
 		
-		// hands table of input fields
-		$output .= '<label>&nbsp;</label>'."\n";
-		$output .= '<table id="hands_input">'."\n";
-		$output .= "<thead>\n";
-		$output .= '  <tr><td></td><th colspan="2">Wij</th><td></td><th colspan="2" style="'.(! $this->isValid() ? 'text-align:left; padding-left:30px;' : '').'">Zij</th><td></td></tr>'."\n";
-		$output .= '  <tr><td></td><td>punten</td><td>roem</td><td></td><td>punten</td><td>roem</td><td></td></tr>'."\n";
-		$output .= "</thead>\n";
-		$output .= "<tbody>\n";
-		foreach ($this->games as $i => $teams)
+		if ($this->load_match->isPosted() || $this->submit->isPosted())
 		{
-			$output .= '<tr class="'.($i % 4 == 1 && $i > 1 ? 'row_spacer' : '').'">'."\n";
-			$output .= '<th>'.$i.'</th>'."\n";
-			foreach ($teams as $team => $pointTypes)
+			$output .= $this->played_date->render().BRCLR; 
+			
+			// hands table of input fields
+			$output .= '<label>&nbsp;</label>'."\n";
+			$output .= '<table id="hands_input">'."\n";
+			$output .= "<thead>\n";
+			$output .= '  <tr><td></td><th colspan="2">Wij</th><td></td><th colspan="2" style="'.(! $this->isValid() ? 'text-align:left; padding-left:30px;' : '').'">Zij</th><td></td></tr>'."\n";
+			$output .= '  <tr><td></td><td>punten</td><td>roem</td><td></td><td>punten</td><td>roem</td><td></td></tr>'."\n";
+			$output .= "</thead>\n";
+			$output .= "<tbody>\n";
+			foreach ($this->games as $i => $game)
 			{
-				foreach ($pointTypes as $type => $input)
+				$output .= '<tr class="'.($i % 4 == 1 && $i > 1 ? 'row_spacer' : '').'">'."\n";
+				$output .= '<th>'.$i.'</th>'."\n";
+				foreach ($game as $team => $inputs)
 				{
-					$output .= '<td>'.$input->render()."</td>\n";
+					foreach ($inputs as $type => $input)
+					{
+						$output .= '<td>'.$input->render()."</td>\n";
+					}
+					$output .= '<td class="hands_input_spacer"></td>'."\n";
 				}
-				$output .= '<td class="hands_input_spacer"></td>'."\n";
+				$output .= '</tr>'."\n";
 			}
-			$output .= '</tr>'."\n";
+			$output .= "</tbody>\n";
+			$output .= "<tfoot>\n";
+			$output .= '  <tr><td></td><td id="total_points_wij">0</td><td id="total_roem_wij">0</td><td></td><td id="total_points_zij">0</td><td id="total_roem_zij">0</td><td></td></tr>'."\n";
+			$output .= "</tfoot>\n";
+			$output .= '</table>'."\n";
+			
+			$output .= $this->submit->render().BRCLR;
 		}
-		$output .= "</tbody>\n";
-		$output .= "<tfoot>\n";
-		$output .= '  <tr><td></td><td id="total_points_wij">0</td><td id="total_roem_wij">0</td><td></td><td id="total_points_zij">0</td><td id="total_roem_zij">0</td><td></td></tr>'."\n";
-		$output .= "</tfoot>\n";
-		$output .= '</table>'."\n";
-		
-		$output .= $this->submit->render().BRCLR;
+		else
+		{
+			$output .= $this->load_match->render().BRCLR;
+		}
 		
 		$output .= "</form>\n";
 		
@@ -145,14 +161,25 @@ class InputMatchForm extends Form
 				// valid value for roem
 				$roem = $inputs['roem']->getPosted();
 				$roem = empty($roem) ? 0 : $roem;
-				if (! $validate->between($roem, 0, 900))  // theoretical max: 8*100 + 100 PIT
-					$this->invalidate($inputs['roem'], 'Ongeldige waarde.');
-				if ($roem % 10 != 0) // roem is always a product of 10
-				    $this->invalidate($inputs['roem'], 'Ongeldige waarde.');
+				if ($roem > 0)
+				{
+					if (! $validate->between($roem, 20, 900))  // theoretical max: 8*100 + 100 PIT
+						$this->invalidate($inputs['roem'], 'Ongeldige waarde.');
+					if ($roem % 10 != 0) // roem is always a product of 10
+					    $this->invalidate($inputs['roem'], 'Ongeldige waarde.');
+				}
 				
 				// NAT of PIT kan geen roem hebben
 				if (in_array(strtolower($points), array('nat', 'pit', 'n', 'p')) && $roem != 0)
 				    $this->invalidate($roem, 'Je kan geen roem hebben bij een NAT of PIT');
+				
+				// if team1 has PIT, team2 needs to have at least 100 roem
+				if (in_array(strtolower($points), array('p', 'pit')))
+				{
+					$otherteam = $team == 'wij' ? 'zij' : 'wij';
+					if ($teams[$otherteam]['roem']->getPosted() < 100)
+						$this->invalidate($teams[$otherteam]['roem'], 'PIT geeft 100 roem.');
+				}
 			}
 		}
 
@@ -168,5 +195,76 @@ class InputMatchForm extends Form
 		return $this->submit->isPosted();
 	}
 	
+	
+	protected function set_match_details($team1, $team2)
+	{
+		if (! $this->load_match->isPosted())
+			return;
+		
+		/**
+		 * fetch
+		 */
+		// fetch match details
+		$sql = "select m.match_id
+				,      m.id_team1
+				,      m.id_team2
+				,      m.played_date
+				,      g.owner_id
+				from   matches  m
+				left join games g on  m.match_id = g.match_id
+				                  and g.game = 16
+				where  ? in (m.id_team1, m.id_team2)
+				and    ? in (m.id_team1, m.id_team2)
+				order by g.game";
+		$query = $this->db->query($sql, array($team1, $team2));
+		$match = $query->row_array();
+		if (empty($match)) // this is impossible without changing the post values
+			throw new Exception('Kan geen ingeroosterde partij vinden tussen jullie en dat team.');
+		
+		// fetch game details
+		$sql = "select * from games where match_id = ? order by game";
+		$query = $this->db->query($sql, array($match['match_id']));
+		$games = $query->result_array();
+		
+		/**
+		 * set
+		 */
+		if (empty($games))
+			return;
+		
+		// who is team1 and who is team2?
+		$team1 = $match['id_team1'] == $team1 ? 'wij' : 'zij';
+		$team2 = $team1 == 'wij' ? 'zij' : 'wij';
+		
+		// set match details
+		$this->played_date->setSelected($match['played_date']);
+		
+		// set game details
+		foreach ($games as $game)
+		{
+			$this->games[$game['game']][$team1]['points']->setSelected(! empty($game['special_team1']) ? $game['special_team1'] : $game['points_team1']);
+			$this->games[$game['game']][$team2]['points']->setSelected(! empty($game['special_team2']) ? $game['special_team2'] : $game['points_team2']);
+			$this->games[$game['game']][$team1]['roem']->setSelected($game['roem_team1']);
+			$this->games[$game['game']][$team2]['roem']->setSelected($game['roem_team2']);
+		}
+		
+		// only owner has edit rights
+		if ($match['owner_id'] != $this->session->userdata('user_id'))
+		{
+			$this->played_date->setDisabled();
+			$this->submit->setDisabled()->setHidden();
+			foreach ($this->games as $game)
+			{
+				$game['wij']['points']->setDisabled();
+				$game['zij']['points']->setDisabled();
+				$game['wij']['roem']->setDisabled();
+				$game['zij']['roem']->setDisabled();
+			}
+		}
+	}
+	
+	
 }
+
+
 

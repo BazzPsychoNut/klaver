@@ -14,7 +14,8 @@ class Team extends CI_Model
     		  $played,
     		  $wins,
     		  $losses,
-    		  $score;
+    		  $points,
+    		  $points_against;
     
     
     function __construct($team_id = null)
@@ -87,13 +88,21 @@ class Team extends CI_Model
     }
 
 	/**
-     * @return int $score
+     * @return int $points
      */
-    public function getScore()
+    public function getPoints()
     {
-        return $this->score;
+        return $this->points;
     }
 
+    /**
+     * @return int $points_against
+     */
+    public function getPointsAgainst()
+    {
+    	return $this->points_against;
+    }
+    
     
     
 }

@@ -28,8 +28,8 @@ class Input_match extends CI_Controller
 				// update games
 				$this->update_games($match, $form);
 				
-				// update matches TODO remove hardcoded 01-01
-				$this->update_matches($match['match_id'], '20130101' /*dateYmd($form->played_date->getPosted())*/ );
+				// update matches 
+				$this->update_matches($match['match_id'], dateYmd($form->played_date->getPosted()) );
 				
 				// update teams score
 				$this->update_teams($this->session->userdata('user_team_id'));
@@ -111,7 +111,7 @@ class Input_match extends CI_Controller
 	                    'special_team1' => in_array(strtoupper($points_team1), array('N','P','NAT','PIT')) ? strtoupper($points_team1) : null,
 	                    'special_team2' => in_array(strtoupper($points_team2), array('N','P','NAT','PIT')) ? strtoupper($points_team2) : null,
 	                    'owner_id'      => $this->session->userdata('user_id'),
-	        );
+	        			);
 	    }
 	    
 	    if ($match['statement_type'] == 'update')
@@ -162,33 +162,33 @@ class Input_match extends CI_Controller
 	    $sql = "update teams t
         	    join
         	    (
-        	    select team_id
-        	    ,      sum(played)          played
-        	    ,      sum(wins)            wins
-        	    ,      sum(losses)          losses
-        	    ,      sum(points)          points
-        	    ,      sum(points_against)  points_against
-        	    from
-        	    (
-        	    select m.id_team1 team_id
-        	    ,      sum(case when m.points_team1 > 0 then 1 else 0 end) played
-        	    ,      sum(case when m.points_team1 > m.points_team2 then 1 else 0 end) wins
-        	    ,      sum(case when m.points_team2 > m.points_team1 then 1 else 0 end) losses
-        	    ,      sum(m.points_team1) points
-        	    ,      sum(m.points_team2) points_against
-        	    from   matches m
-        	    where  m.id_team1 = ?
-        	    union all
-        	    select m.id_team2 team_id
-        	    ,      sum(case when m.points_team2 > 0 then 1 else 0 end) played
-        	    ,      sum(case when m.points_team2 > m.points_team1 then 1 else 0 end) wins
-        	    ,      sum(case when m.points_team1 > m.points_team2 then 1 else 0 end) losses
-        	    ,      sum(m.points_team2) points
-        	    ,      sum(m.points_team1) points_against
-        	    from   matches m
-        	    where  m.id_team2 = ?
-        	    ) s
-        	    group by team_id
+	        	    select team_id
+	        	    ,      sum(played)          played
+	        	    ,      sum(wins)            wins
+	        	    ,      sum(losses)          losses
+	        	    ,      sum(points)          points
+	        	    ,      sum(points_against)  points_against
+	        	    from
+	        	    (
+		        	    select m.id_team1 team_id
+		        	    ,      sum(case when m.points_team1 > 0 then 1 else 0 end) played
+		        	    ,      sum(case when m.points_team1 > m.points_team2 then 1 else 0 end) wins
+		        	    ,      sum(case when m.points_team2 > m.points_team1 then 1 else 0 end) losses
+		        	    ,      sum(m.points_team1) points
+		        	    ,      sum(m.points_team2) points_against
+		        	    from   matches m
+		        	    where  m.id_team1 = ?
+		        	    union all
+		        	    select m.id_team2 team_id
+		        	    ,      sum(case when m.points_team2 > 0 then 1 else 0 end) played
+		        	    ,      sum(case when m.points_team2 > m.points_team1 then 1 else 0 end) wins
+		        	    ,      sum(case when m.points_team1 > m.points_team2 then 1 else 0 end) losses
+		        	    ,      sum(m.points_team2) points
+		        	    ,      sum(m.points_team1) points_against
+		        	    from   matches m
+		        	    where  m.id_team2 = ?
+	        	    ) s
+	        	    group by team_id
         	    ) a on t.team_id = a.team_id
         	    set    t.played = a.played
         	    ,      t.wins = a.wins

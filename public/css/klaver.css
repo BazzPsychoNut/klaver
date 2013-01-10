@@ -34,7 +34,7 @@ div.poule_overview					{ margin:40px 0; }
 div.poule_overview table th 		{ border-right:1px solid #ddd; padding:4px; }
 div.poule_overview table td 		{ font-size:10px; padding:2px; }
 div.poule_overview table td.team	{ padding:5px; }
-div.poule_overview table td.score	{ text-align:center; }
+div.poule_overview table td.points	{ text-align:center; }
 div.poule_overview table tr			{ border-bottom:1px solid #ddd; }
 div.poule_overview table table tr	{ border-bottom:0; }
 td.my_match							{ background-color:#B1D1D8; }
