@@ -18,7 +18,7 @@ class LoginForm extends Form
 		$this->name = $name;
 		
 		$this->email = new TextInput('email');
-		$this->email->setLabel('E-mail')->setRequired(true);
+		$this->email->setLabel('Naam of E-mail')->setRequired(true);
 		
 		$this->password = new PasswordInput('password');
 		$this->password->setLabel('Wachtwoord')->setRequired(true);
@@ -64,10 +64,6 @@ class LoginForm extends Form
 		if (! $this->password->isPosted())
 			$this->invalidate($this->password, 'Dit is een verplicht veld');
 		
-		// emails
-		if (! $validate->email($this->email->getPosted()))
-			$this->invalidate($this->email, 'Dit is een ongeldig email adres.');
-
 		return $this->isValid;
 	}
 	

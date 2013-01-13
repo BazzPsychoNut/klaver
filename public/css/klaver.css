@@ -78,5 +78,17 @@ table#hands_input tbody th			{ text-align:right; padding-right:10px; }
 table#hands_input tfoot td			{ text-align:right; padding-right:16px; font-weight:bold; } 
 table#hands_input tr.row_spacer		{ border-top:20px solid white; }
 
+/* plan match */
+#plan_form_table_players			{ width:150px; height:220px; vertical-align:bottom; margin:0; padding:0; }
+#plan_form_table_players table		{ width:150px; margin-bottom:22px; }
+#plan_form_table_players table th	{ height:38px; }
+#plan_form_table					{ width:750px; height:220px; overflow:auto; }
+#plan_form_table table				{ table-layout:fixed; width:2350px; }
+#plan_form_table table thead th,
+#plan_form_table table tbody td		{ width:95px; padding:5px; }
+#plan_form_table table#players th	{ width:145px; padding:5px; }
+
+
+
 
 				

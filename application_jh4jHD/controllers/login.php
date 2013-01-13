@@ -25,7 +25,7 @@ class Login extends CI_Controller
 						,      t.poule_id
 						from   players  p
 						left join teams t on p.team_id = t.team_id
-						where  p.email = ?";
+						where  lower(?) in (lower(p.email), lower(p.name))";
 				$query = $this->db->query($sql, array($form->email->getPosted()));
 				$row = $query->row_array();
 				

@@ -7,10 +7,26 @@ class Plan extends CI_Controller
 	{
 		$data = array();
 		
-		// show afspraak plannen form
+		require_once APPPATH.'forms/PlanForm.php';
+		$form = new PlanForm();
 		
+		if ($form->isPosted())
+		{
+			try
+			{
+				if (! $form->validate())
+					throw new Exception('Het invoeren is mislukt, omdat niet alle velden goed zijn ingevuld.');
 		
+				// TODO handle post
+			}
+			catch (Exception $e)
+			{
+				$data['feedback'] = error($e->getMessage());
+			}
+		}
+		 
 		
+		$data['form'] = $form;
 		
 		$this->load->view('headerView');
 		$this->load->view('planView', $data);
