@@ -10,6 +10,7 @@ class InputMatchForm extends Form
 			$games = array(),
 			$totals = array(),
 			$load_match,
+			$cancel,
 			$submit;
 	
 	
@@ -61,10 +62,15 @@ class InputMatchForm extends Form
 		$this->load_match = new SubmitButton('load_match', 'Partij openen');
 		$this->load_match->setLabel('&nbsp;')->addStyle('margin-top:10px');
 		
+		// cancel
+		$this->cancel = new SubmitButton('cancel', 'Annuleren');
+		$this->cancel->addStyle('margin:20px')->addClass('cancel');
+		
 		// submit
 		$this->submit = new SubmitButton('input_match', 'Opslaan');
 		$this->submit->setLabel('&nbsp;')->addStyle('margin-top:20px');
 		
+		// load match details from database
 		if ($this->load_match->isPosted())
 			$this->set_match_details($this->session->userdata('user_team_id'), $this->opponent_team->getPosted());
 	}
@@ -83,6 +89,9 @@ class InputMatchForm extends Form
 		
 		if ($this->load_match->isPosted() || $this->submit->isPosted())
 		{
+			// TODO opponent_team dropdown should be disabled, but we need it posted
+			//$this->opponent_team->setDisabled();
+			
 			$output .= $this->played_date->render().BRCLR; 
 			
 			// hands table of input fields
@@ -113,7 +122,8 @@ class InputMatchForm extends Form
 			$output .= "</tfoot>\n";
 			$output .= '</table>'."\n";
 			
-			$output .= $this->submit->render().BRCLR;
+			$output .= $this->submit->render();
+			$output .= $this->cancel->render().BRCLR;
 		}
 		else
 		{

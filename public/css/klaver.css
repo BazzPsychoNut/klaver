@@ -41,8 +41,8 @@ td.my_match							{ background-color:#B1D1D8; }
 span.this_is_me						{ color:#EE3322; }
 
 /* forms */
-label										{ float:left; width:150px; padding-top:5px; }
-input, select, textarea						{ float:left; padding:5px; margin:0 10px 2px 0; }
+label								{ float:left; width:150px; padding-top:5px; }
+input, select, textarea				{ float:left; padding:5px; margin:0 10px 2px 0; }
 input[type="submit"], input[type="button"], div.error, div.success  { 
 	padding: 8px 20px;  
 	font-size: 110%; 
@@ -57,8 +57,10 @@ input[type="submit"]:hover 			{ background: none repeat scroll 0 0 #5BA150; }
 label.required						{ font-weight:bold; }
 input.invalid, select.invalid, textarea.invalid	{ border:1px solid #EE3322; }
 div.invalidations					{ float:left; border:1px solid #EE3322; color:#9E2440; background-color:#FFDACC; padding:5px; margin-bottom:5px; max-width:400px; }
+input.cancel						{ border-color:brown; background: none repeat scroll 0 0 #E25A3F; }
+input.cancel:hover					{ background: none repeat scroll 0 0 #ED7A65; }
 
-/* feedback */
+/* feedback*/
 div.error, div.success				{ width:600px; margin-bottom:5px; }
 div.error							{ border-color:brown; background: none repeat scroll 0 0 #E25A3F; }
 div.success							{ border-color:#2D6324; background: none repeat scroll 0 0 #5BA150; }
@@ -79,14 +81,10 @@ table#hands_input tfoot td			{ text-align:right; padding-right:16px; font-weight
 table#hands_input tr.row_spacer		{ border-top:20px solid white; }
 
 /* plan match */
-#plan_form_table_players			{ width:150px; height:220px; vertical-align:bottom; margin:0; padding:0; }
-#plan_form_table_players table		{ width:150px; margin-bottom:22px; }
-#plan_form_table_players table th	{ height:38px; }
-#plan_form_table					{ width:750px; height:220px; overflow:auto; }
-#plan_form_table table				{ table-layout:fixed; width:2350px; }
-#plan_form_table table thead th,
-#plan_form_table table tbody td		{ width:95px; padding:5px; }
-#plan_form_table table#players th	{ width:145px; padding:5px; }
+#plan_form_table thead th			{ padding:20px 5px 10px 5px; }
+#plan_form_table tbody th			{ width:150px; padding:3px 0; }
+#plan_form_table td					{ width:100px; margin:0; padding:5px; }
+#plan_form_table tr					{ border-bottom:1px solid #ddd; }
 
 
 

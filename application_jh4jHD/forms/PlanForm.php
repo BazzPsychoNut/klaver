@@ -1,16 +1,20 @@
 <?php
 
 require_once APPPATH.'libraries/Form.php';
+require_once APPPATH.'models/planning_img.php';
 
 class PlanForm extends Form 
 {
 	public 	$opponent_team,
 			$load_match_planning,
 			$availabilities = array(),
+			$cancel,
 			$submit;
 	
 	protected $dates = array(),
-			  $players = array();
+			  $players = array(),
+			  $images = array(),
+			  $best_options = array();
 	
 	
 	
@@ -39,32 +43,52 @@ class PlanForm extends Form
 		$this->opponent_team = new Dropdown('opponent_team');
 		$this->opponent_team->setLabel('Tegenstanders')->appendOptions($options);
 		
-		// planning consists of every day in the next 3 weeks as columns
-		// and all 4 players as rows
-		// Users can select yes, maybe or no by clicking on the images (copied from afspreken.nl)
-		// I will use hidden input fields to store the values
-		if ($this->opponent_team->isPosted())
-		{
-			$this->create_dates();
-			$this->fetch_players($this->session->userdata('user_team_id'), $this->opponent_team->getPosted());
-			
-			foreach ($this->players as $player_id => $player_name)
-			{
-				foreach ($this->dates as $date => $date_fields)
-				{
-					// fill $this->availabilities
-					$this->availabilities[$player_id][$date] = new HiddenInput('availability_'.$player_id.'_'.$date);
-				}
-			}
-		}
-		
 		// load submit
 		$this->load_match_planning = new SubmitButton('load_match_planning', 'Partij afspraak openen');
 		$this->load_match_planning->setLabel('&nbsp;')->addStyle('margin-top:10px');
 		
+		// cancel
+		$this->cancel = new SubmitButton('cancel', 'Annuleren');
+		$this->cancel->addStyle('margin:20px')->addClass('cancel');
+		
 		// submit
 		$this->submit = new SubmitButton('save_availability', 'Bewaren');
 		$this->submit->setLabel('&nbsp;')->addStyle('margin-top:20px');
+			
+		// planning consists of every day in the next 3 weeks as columns
+		// and all 4 players as rows
+		// Users can select yes, maybe or no by clicking on the images (copied from afspreken.nl)
+		// I will use hidden input fields to store the values
+		if ($this->load_match_planning->isPosted() || $this->submit->isPosted())
+		{
+			$this->create_dates();
+			$this->fetch_players($this->session->userdata('user_team_id'), $this->opponent_team->getPosted());
+			
+			foreach ($this->dates as $date => $date_fields)
+			{
+				// create $this->availabilities hidden inputs
+				$this->availabilities[$date] = new HiddenInput('availability_'.$date);
+				
+				// create image objects
+				foreach ($this->players as $player_id => $player_name)
+				{
+					// create the 3 images (default grey)
+					foreach (array(1,2,3) as $type) 
+						$this->images[$player_id][$date][$type] = new Planning_img($type, $player_id);
+						
+					// set one image active ( = _a ) if the hidden input field was posted
+					if ($player_id == $this->session->userdata('user_id') && $this->availabilities[$date]->isPosted())
+					{
+						$posted_type = $this->availabilities[$date]->getPosted();
+						$this->images[$player_id][$date][$posted_type]->set_active();
+					}
+				}
+			}
+		}
+		
+		// load match details from database
+		if ($this->load_match_planning->isPosted())
+			$this->set_availability($this->session->userdata('user_team_id'), $this->opponent_team->getPosted());
 	}
 	
 	/**
@@ -78,12 +102,21 @@ class PlanForm extends Form
 		
 		$output .= $this->opponent_team->render().BRCLR;
 		
-		if ($this->opponent_team->isPosted())
+		if ($this->load_match_planning->isPosted() || $this->submit->isPosted())
 		{
-			$data = array('players' => $this->players, 'dates' => $this->dates, 'availabilities' => $this->availabilities);
+			// TODO opponent_team dropdown should be disabled, but we need it posted
+			//$this->opponent_team->setDisabled();
+			
+			$data = array(
+					'players' 		 => $this->players, 
+					'dates' 		 => $this->dates, 
+					'availabilities' => $this->availabilities,
+					'images' 		 => $this->images,
+					);
 			$output .= $this->load->view('planFormView.php', $data, true);
 			
-			$output .= $this->submit->render().BRCLR;
+			$output .= $this->submit->render();
+			$output .= $this->cancel->render().BRCLR;
 		}
 		else
 		{
@@ -104,10 +137,14 @@ class PlanForm extends Form
 		if (! $this->isPosted())
 			return null;
 		
-		$validate = new Validate();
+		//$validate = new Validate();
 		
-		// TODO build validations
-		
+		// all dates should be filled in
+		foreach ($this->availabilities as $date => $input)
+		{
+			if (! $input->isPosted())
+				$this->invalidate($input, 'Verplicht in te vullen');
+		}
 		
 		return $this->isValid;
 	}
@@ -155,6 +192,33 @@ class PlanForm extends Form
 					'day' => $days[(date('w', $time))],                // Zondag 
 					'date' => date('d', $time).' '.$months[date('n', $time)]  // 13 januari
 					); 
+		}
+	}
+	
+	/**
+	 * set availability from database 
+	 */
+	protected function set_availability($team1, $team2)
+	{
+		// fetch availability 
+		$sql = "select mp.player_id
+				,      date_format(mp.plan_date, '%Y%m%d') plan_date
+				,      mp.availability
+				from   match_planning mp
+				join   matches        m  on mp.match_id = m.match_id
+				where  ? in (m.id_team1, m.id_team2)
+				and    ? in (m.id_team1, m.id_team2)
+				order by player_id, plan_date";
+		$query = $this->db->query($sql, array($team1, $team2));
+		foreach ($query->result_array() as $row) 
+		{
+			if ($row['player_id'] == $this->session->userdata('user_id'))
+				$this->images[$row['player_id']][$row['plan_date']][$row['availability']]->set_active();
+			else
+				$this->images[$row['player_id']][$row['plan_date']][$row['availability']]->set_someone_else_active();
+			
+			// TODO set $best_options
+			
 		}
 	}
 	

@@ -3,9 +3,13 @@
 			
 			<div id="afspraak_plannen_head">
 				<p>
-					Plan hier een klaverjasafspraak.
+					Vul hier je beschikbaarheid in voor de komende drie weken.
 				</p>
 			</div>
+			
+			<?php if (! empty($feedback)): ?>
+			<?php echo $feedback; ?><br class="clear" />
+			<?php endif; ?>
 			
 			<?php echo $form->render(); ?>
 			

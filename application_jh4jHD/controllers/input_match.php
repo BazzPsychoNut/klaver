@@ -120,10 +120,8 @@ class Input_match extends CI_Controller
 	        if ($match['owner_id'] != $this->session->userdata('user_id'))
 	            throw new Exception('Alleen degene die de partij oorspronkelijk heeft ingevoerd kan deze aanpassen.');
 	    
-	        // We dont really update. We delete then insert, because it's easier.
+	        // We dont really update. We delete then insert, because it's easier. (no affected_rows checking, because it will be 0 the first time)
 	        $this->db->delete('games', array('match_id' => $matchId));
-	        if ($this->db->affected_rows() == 0)
-	            throw new Exception('Error bij verwijderen oude partijgegevens. - '.$this->db->_error_message());
 	    }
 	     
 	    // insert
