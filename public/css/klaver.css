@@ -20,6 +20,9 @@ div#header 		{ background-color: #003F78; padding: 10px 20px; z-index: 999; posi
 #top_menu li:hover 		{ background-color:white; }
 #top_menu li:hover a 	{ color:#003F78; }
 
+/* user_name */
+#user_name              { color:white; position:absolute; right:30px; bottom:10px; }
+
 /* container */
 div#container 	{ border-top:0 none; box-shadow:0 0 5px 5px #888888; margin:0 auto; text-align:left; width:960px; background-color:#fff; padding:0; }
 div#content		{ padding:10px 20px 40px; min-height:600px; }
@@ -84,8 +87,9 @@ table#hands_input tr.row_spacer		{ border-top:20px solid white; }
 #plan_form_table thead th			{ padding:20px 5px 10px 5px; }
 #plan_form_table tbody th			{ width:150px; padding:3px 0; }
 #plan_form_table td					{ width:100px; margin:0; padding:5px; }
+#plan_form_table td.pick			{ width:40px; }
 #plan_form_table tr					{ border-bottom:1px solid #ddd; }
-
+#plan_form_table tr.picked			{ background-color:#A8CEA8; border:2px solid green; }
 
 
 

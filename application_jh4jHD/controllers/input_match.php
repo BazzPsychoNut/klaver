@@ -23,7 +23,8 @@ class Input_match extends CI_Controller
 					throw new Exception('Het invoeren is mislukt, omdat niet alle velden goed zijn ingevuld.');
 				
 				// get details of played match
-				$match = $this->fetch_match_details($this->session->userdata('user_team_id'), $form->opponent_team->getPosted());
+				$opponent_team = $form->opponent_team->isPosted() ? $form->opponent_team->getPosted() : $form->opponent_team_hidden->getPosted();
+				$match = $this->fetch_match_details($this->session->userdata('user_team_id'), $opponent_team);
 
 				// update games
 				$this->update_games($match, $form);
@@ -33,7 +34,7 @@ class Input_match extends CI_Controller
 				
 				// update teams score
 				$this->update_teams($this->session->userdata('user_team_id'));
-				$this->update_teams($form->opponent_team->getPosted());
+				$this->update_teams($opponent_team);
 				
 				$data['feedback'] = success('Partij succesvol opgeslagen.<br/> Bedankt voor het invoeren en succes met de volgende partij!');
 			}
@@ -140,8 +141,8 @@ class Input_match extends CI_Controller
 	protected function update_matches($match_id, $played_date)
 	{
 	    $sql = "update matches m
-        	    set    m.points_team1 = (select sum(g.points_team1) from games g where g.match_id = m.match_id)
-        	    ,      m.points_team2 = (select sum(g.points_team2) from games g where g.match_id = m.match_id)
+        	    set    m.points_team1 = (select sum(g.points_team1) + sum(g.roem_team1) from games g where g.match_id = m.match_id)
+        	    ,      m.points_team2 = (select sum(g.points_team2) + sum(g.roem_team2) from games g where g.match_id = m.match_id)
         	    ,      m.played_date = ?
         	    where  m.match_id = ?";
 	    $this->db->query($sql, array($played_date, $match_id) );

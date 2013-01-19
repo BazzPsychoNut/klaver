@@ -54,8 +54,11 @@ class Login extends CI_Controller
 					redirect('account');
 				}
 				
+				// this will never get displayed, but let's leave it here just in case
 				$data['feedback'] = success('Je bent nu ingelogd als '.$this->session->userdata('user_name').'.');
 				
+				// redirect user to home screen
+				redirect('home');
 			}
 			catch (Exception $e)
 			{

@@ -6,6 +6,7 @@ class InputMatchForm extends Form
 {
 	public 	$user_team,
 			$opponent_team,
+			$opponent_team_hidden, // hidden input field for when we have the opponent team dropdown disabled
 			$played_date,
 			$games = array(),
 			$totals = array(),
@@ -42,6 +43,8 @@ class InputMatchForm extends Form
 		$this->opponent_team = new Dropdown('opponent_team');
 		$this->opponent_team->setLabel('Tegenstanders')->appendOptions($options);
 		
+		$this->opponent_team_hidden = new HiddenInput('opponent_team_hidden');
+		
 		$this->played_date = new DateInput('played_date', date('d-m-Y'));  
 		$this->played_date->setLabel('Datum gespeeld');
 		
@@ -72,7 +75,10 @@ class InputMatchForm extends Form
 		
 		// load match details from database
 		if ($this->load_match->isPosted())
-			$this->set_match_details($this->session->userdata('user_team_id'), $this->opponent_team->getPosted());
+		{
+			$opponent_team = $this->opponent_team->isPosted() ? $this->opponent_team->getPosted() : $this->opponent_team_hidden->getPosted();
+			$this->set_match_details($this->session->userdata('user_team_id'), $opponent_team);
+		}
 	}
 	
 	/**
@@ -85,12 +91,15 @@ class InputMatchForm extends Form
 		$output = '<form name="'.$this->name.'" method="'.$this->method.'" action="'.$this->action.'" enctype="'.$this->enctype.'">'."\n";
 		
 		$output .= $this->user_team->render().BRCLR;
-		$output .= $this->opponent_team->render().BRCLR;
 		
 		if ($this->load_match->isPosted() || $this->submit->isPosted())
 		{
-			// TODO opponent_team dropdown should be disabled, but we need it posted
-			//$this->opponent_team->setDisabled();
+			// disable opponent_team dropdown but add the hidden input field with its value to make it post
+			$this->opponent_team->setDisabled()->setSelected($this->opponent_team_hidden->getPosted()); // when we post as this is disabled (setSelected won't overwrite anything posted)
+			$this->opponent_team_hidden->setSelected($this->opponent_team->getPosted());
+			
+			$output .= $this->opponent_team->render();
+			$output .= $this->opponent_team_hidden->render().BRCLR;
 			
 			$output .= $this->played_date->render().BRCLR; 
 			
@@ -127,6 +136,8 @@ class InputMatchForm extends Form
 		}
 		else
 		{
+			$output .= $this->opponent_team->render().BRCLR;
+			
 			$output .= $this->load_match->render().BRCLR;
 		}
 		

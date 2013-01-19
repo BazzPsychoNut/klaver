@@ -3,7 +3,7 @@
  * fix to run at work
  * empty include path
  */
-set_include_path(PATH_SEPARATOR);  // TODO remove
+set_include_path(PATH_SEPARATOR);
 
 /*
  *---------------------------------------------------------------

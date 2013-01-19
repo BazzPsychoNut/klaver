@@ -115,7 +115,7 @@ class Poule extends CI_Model
     	// the ranking looks like this:
     	// rank team G W V voor tegen
     	// Dit kan gewoon opgehaald worden als simpele fetch van teams :)
-    	$sql = "select * from teams where poule_id = ? order by points, team_id";
+    	$sql = "select * from teams where poule_id = ? order by wins desc, points desc, team_id";
     	$query = $this->db->query($sql, array((int) $this->poule_id));
     	$result = $query->result_array();
     	if (empty($result))

@@ -11,7 +11,7 @@ class Planning_img extends CI_Model
     protected $alt,
     		  $title,
     		  $src,
-    		  $class;
+    		  $classes = array();
     
 	/**
 	 * create planning image
@@ -41,23 +41,23 @@ class Planning_img extends CI_Model
         		$this->alt = 'Ja';
         		$this->title = 'Ja';
         		$this->src = base_url().'img/yes_g.png';
-        		$this->class = $player_id == $this->session->userdata('user_id') ? 'editable' : '';
 	        	break;
         	case 2:
         		$this->alt = 'Misschien';
         		$this->title = 'Misschien';
         		$this->src = base_url().'img/maybe_g.png';
-        		$this->class = $player_id == $this->session->userdata('user_id') ? 'editable' : '';
         		break;
         	case 3:
         		$this->alt = 'Nee';
         		$this->title = 'Nee';
         		$this->src = base_url().'img/no_g.png';
-        		$this->class = $player_id == $this->session->userdata('user_id') ? 'editable' : '';
         		break;
         	default:
         		throw new Exception('Invalid type for creating planning image: - '.$type);
         }
+        
+        if ($player_id == $this->session->userdata('user_id'))
+        	$this->add_class('editable');
         
         return $this;
     }
@@ -68,7 +68,7 @@ class Planning_img extends CI_Model
      */
     public function render()
     {
-    	return '<img alt="'.$this->alt.'" title="'.$this->title.'" src="'.$this->src.'" class="'.$this->class.'" />';
+    	return '<img alt="'.$this->alt.'" title="'.$this->title.'" src="'.$this->src.'" class="'.implode(' ', $this->classes).'" />';
     }
     
 	/**
@@ -76,15 +76,40 @@ class Planning_img extends CI_Model
 	 */
     public function set_active()
     {
-    	$this->src = str_replace('_g', '_a', $this->src);
+    	$this->src = str_replace(array('_d', '_g'), '_a', $this->src);
+    	
+    	return $this;
     }
 
     /**
-     * set image active (selected)
+     * set image half active (uneditable)
      */
-    public function set_someone_else_active()
+    public function set_half_active()
     {
-    	$this->src = str_replace('_g', '_d', $this->src);
+    	$this->src = str_replace(array('_a', '_g'), '_d', $this->src);
+    	
+    	return $this;
+    }
+    
+    /**
+     * add a class to the image
+     * @param string $class
+     */
+    public function add_class($class)
+    {
+    	if (! in_array($class, $this->classes))
+    		$this->classes[] = $class;
+    	
+    	return $this;
+    }
+    
+    
+    public function remove_class($class)
+    {
+    	if (in_array($class, $this->classes))
+    		$this->classes = array_diff($this->classes, array($class));
+    	
+    	return $this;
     }
     
     

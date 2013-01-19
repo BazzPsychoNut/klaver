@@ -42,6 +42,13 @@ $base_url = $this->config->base_url();
 					<?php endif; ?>
 					</li>
 				</ul>
+				
+				<?php if ($this->session->userdata('user_logged_in') === true): ?>
+				<div id="user_name">
+				    <?php echo $this->session->userdata('user_name'); ?><br/>
+				    <?php echo $this->session->userdata('user_team'); ?>
+			    </div>
+			    <?php endif; ?>
 			</div>
 		</div>
 		
