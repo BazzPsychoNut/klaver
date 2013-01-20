@@ -12,40 +12,43 @@ class Input_match extends CI_Controller
 	        redirect('login');
 	    
 	    $data = array();
-	    
-		$form = new InputMatchForm();
-		
-		if ($form->isPosted())
+		$data['competition_is_started'] = $this->competition->init(3)->is_started(); // keep the init parameter at the current season
+		if ($data['competition_is_started']) 
 		{
-			try
+			$form = new InputMatchForm();
+			
+			if ($form->isPosted())
 			{
-				if (! $form->validate())
-					throw new Exception('Het invoeren is mislukt, omdat niet alle velden goed zijn ingevuld.');
-				
-				// get details of played match
-				$opponent_team = $form->opponent_team->isPosted() ? $form->opponent_team->getPosted() : $form->opponent_team_hidden->getPosted();
-				$match = $this->fetch_match_details($this->session->userdata('user_team_id'), $opponent_team);
-
-				// update games
-				$this->update_games($match, $form);
-				
-				// update matches 
-				$this->update_matches($match['match_id'], dateYmd($form->played_date->getPosted()) );
-				
-				// update teams score
-				$this->update_teams($this->session->userdata('user_team_id'));
-				$this->update_teams($opponent_team);
-				
-				$data['feedback'] = success('Partij succesvol opgeslagen.<br/> Bedankt voor het invoeren en succes met de volgende partij!');
+				try
+				{
+					if (! $form->validate())
+						throw new Exception('Het invoeren is mislukt, omdat niet alle velden goed zijn ingevuld.');
+					
+					// get details of played match
+					$opponent_team = $form->opponent_team->isPosted() ? $form->opponent_team->getPosted() : $form->opponent_team_hidden->getPosted();
+					$match = $this->fetch_match_details($this->session->userdata('user_team_id'), $opponent_team);
+	
+					// update games
+					$this->update_games($match, $form);
+					
+					// update matches 
+					$this->update_matches($match['match_id'], dateYmd($form->played_date->getPosted()) );
+					
+					// update teams score
+					$this->update_teams($this->session->userdata('user_team_id'));
+					$this->update_teams($opponent_team);
+					
+					$data['feedback'] = success('Partij succesvol opgeslagen.<br/> Bedankt voor het invoeren en succes met de volgende partij!');
+				}
+				catch (Exception $e)
+				{
+					$data['feedback'] = error($e->getMessage());
+				}
 			}
-			catch (Exception $e)
-			{
-				$data['feedback'] = error($e->getMessage());
-			}
+		    
+			
+			$data['form'] = $form;
 		}
-	    
-		
-		$data['form'] = $form;
 		
 	    $this->load->view('headerView');
 		$this->load->view('inputMatchView', $data);
@@ -200,4 +203,3 @@ class Input_match extends CI_Controller
 	}
 }
 
-/* Location: ./application/controllers/home.php */

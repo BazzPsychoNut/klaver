@@ -1,16 +1,15 @@
 
 			<h1>Partij invoeren</h1>
 			
+			<?php if ($competition_is_started): ?>
+			
 			<p>
 				Vul hier een gespeelde partij in.<br/>
 				Vul bij punten de volledige, <strong>niet afgeronde</strong> punten in. "NAT" of "PIT" (of "N" of "P") is ook toegestaan.
 				<br/><br/>
 			</p>
 			
-			<?php 
-			if (! empty($feedback))
-			    echo "<p>$feedback</p>\n";;
-			?>
+			<?php if (! empty($feedback)) echo "<p>$feedback</p>\n"; ?>
 			
 			<?php echo $form->render(); ?> 
 	
@@ -81,4 +80,10 @@
 				$(total_id).html(sum);
 			}
 			</script>
+				
+			<?php else: // competition_is_started ?>
+			
+			<p>De competitie is nog niet begonnen, dus er kunnen nog geen gespeelde partijen worden ingevoerd.</p>
+			
+			<?php endif; ?>
 			

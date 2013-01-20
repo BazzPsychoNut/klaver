@@ -43,6 +43,11 @@ div.poule_overview table table tr	{ border-bottom:0; }
 td.my_match							{ background-color:#B1D1D8; }
 span.this_is_me						{ color:#EE3322; }
 
+/* players overview (shown in signup phase before competition start) */
+table#players_overview				{ float:left; margin:10px 20px; }
+table#players_overview th			{ font-weight:bold; border-bottom:1px solid #ddd; padding:4px 10px; }
+table#players_overview td			{ padding:3px 10px; border-bottom:1px solid #ddd; }
+
 /* forms */
 label								{ float:left; width:150px; padding-top:5px; }
 input, select, textarea				{ float:left; padding:5px; margin:0 10px 2px 0; }

@@ -23,7 +23,7 @@ set_include_path(PATH_SEPARATOR);
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	define('ENVIRONMENT', 'development');
+	define('ENVIRONMENT', 'production');
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
@@ -61,7 +61,7 @@ if (defined('ENVIRONMENT'))
  * as this file.
  *
  */
-$system_path = '../../private/klaver/system_SPBzB8';
+$system_path = '../../private_html/klaver/system_SPBzB8';
 
 /*
  *---------------------------------------------------------------
@@ -77,7 +77,7 @@ $system_path = '../../private/klaver/system_SPBzB8';
  * NO TRAILING SLASH!
  *
  */
-$application_folder = '../../private/klaver/application_jh4jHD';
+$application_folder = '../../private_html/klaver/application_jh4jHD';
 	
 
 /*

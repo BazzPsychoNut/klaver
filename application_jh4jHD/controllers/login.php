@@ -29,7 +29,7 @@ class Login extends CI_Controller
 				$query = $this->db->query($sql, array($form->email->getPosted()));
 				$row = $query->row_array();
 				
-				if ($row['level'] == 0)
+				if (empty($row['level'])) // not existing or 0 (0 = not yet activated)
 					throw new Exception('Je account is niet actief. Klik op de activatielink in je e-mail.');
 				
 				list($password, $personal_salt) = explode(' ', $row['password']);

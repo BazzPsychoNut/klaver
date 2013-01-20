@@ -21,8 +21,8 @@ class Account extends CI_Controller
 		// fetch account data after possible changes
 		$sql = "select p.name
 				,      p.email
-				,      t.name   team_name
-				,      p2.name  maat_name
+				,      ifnull(t.name, '-')   team_name
+				,      ifnull(p2.name, '-')  maat_name
 				from   players    p
 				left join teams   t  on  p.team_id = t.team_id
 				left join players p2 on  p.team_id = p2.team_id

@@ -32,12 +32,12 @@
 				<table style="padding:0; margin:0; border:0;">
 					<tr>
 						<td>
-							<h1>Fonteinkerk Klaverjascompetitie</h1>
+							<h1 style="font-weight:normal; margin:1em 0 0.5em 0; color:#EE3322; font-size:190%;">Fonteinkerk Klaverjascompetitie</h1>
 						</td>
 					</tr>
 					<tr>
 						<td>	
-							<h2>Afspraak geprikt</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Afspraak geprikt</h2>
 							<br/>
 							<p>Beste <?php echo $name; ?>,</p>
 							<p>
@@ -50,7 +50,7 @@
 					</tr>
 					<tr>
 						<td>
-							<h2>Team Gegevens</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Team Gegevens</h2>
 						</td>
 					</tr>
 					<tr>
@@ -81,7 +81,7 @@
 					<?php if (! empty($comments)): ?>
 					<tr>
 						<td>
-							<h2>Opmerkingen</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Opmerkingen</h2>
 						</td>
 					</tr>
 					<tr>

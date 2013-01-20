@@ -7,12 +7,21 @@
 					Ook dit seizoen dreigt weer vol spanning en amusement te zitten.
 				</p>
 				<p>
-					Via deze site kunnen deelnemers de stand bekijken, partijen uploaden en afspraken plannen.<br/>
+					Via deze site kunnen deelnemers de stand bekijken, afspraken plannen en gespeelde partijen invoeren.<br/>
 					Veel succes!
 				</p>
 			</div>
 			
+			<?php if ($competition_is_started): ?>
 			<?php echo $pouleRanking1; ?> 
 			<?php echo $pouleRanking2; ?>
 			<br class="clear" />
+			<?php else: ?>
+			<div>
+				<p>
+					De competitie is nog niet begonnen, dus <a href="<?php echo base_url(); ?>signup">schrijf je nu in</a>!
+				</p>
+			</div>
+			<?php endif; ?>
 	
+			<div id="news"></div>

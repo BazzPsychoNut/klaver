@@ -44,7 +44,8 @@ class Signup extends CI_Controller
 						'team_id'	=> $teamId,
 						'confirmation' => sha1($confirmation),
 						);
-				if (! $this->db->insert('players', $set))
+				$this->db->insert('players', $set);
+				if ($this->db->affected_rows() == 0)
 					throw new Exception('Error bij opslaan nieuwe speler. '.$this->db->_error_message());
 				
 				$p1_id = $this->db->insert_id();
@@ -118,7 +119,7 @@ class Signup extends CI_Controller
 					}
 				}
 				// OR join player1 to selected maat
-				elseif ($form->singles->isPosted())
+				elseif (! empty($form->singles) && $form->singles->isPosted())
 				{
 					$p2_id = $form->singles->getPosted();
 					

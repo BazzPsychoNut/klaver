@@ -12,118 +12,120 @@ class Plan extends CI_Controller
 	public function index()
 	{
 		$data = array();
-		
-		require_once APPPATH.'forms/PlanForm.php';
-		$form = new PlanForm();
-		
-		if ($form->isPosted())
+		$data['competition_is_started'] = $this->competition->init(3)->is_started(); // keep the init parameter at the current season
+		if ($data['competition_is_started']) 
 		{
-			try
+			require_once APPPATH.'forms/PlanForm.php';
+			$form = new PlanForm();
+			
+			if ($form->isPosted())
 			{
-				if (! $form->validate())
-					throw new Exception('Het invoeren is mislukt, omdat niet alle velden goed zijn ingevuld.');
-		
-				// fetch teams details
-				$opponent_team = $form->opponent_team->isPosted() ? $form->opponent_team->getPosted() : $form->opponent_team_hidden->getPosted();
-				$this->fetch_teams($this->session->userdata('user_team_id'), $opponent_team);
-				
-				// fetch players details
-				$this->fetch_players();
-				
-				// fetch match details
-				$this->fetch_match();
-				
-				// often used variables
-				$match_id = $this->match_details['match_id'];
-				$user_id  = $this->session->userdata('user_id');
-				
-				$this->fetch_comments($match_id);
-				
-				// as a business rule you can only pick a date when you already filled in your availability
-				if ($this->is_new_picked_date_posted($form->picked_date, $match_id)) 
+				try
 				{
-					// store the posted picked date.
-					$picked_date = $form->picked_date->getPosted();
-					$result = $this->db->update('matches', array('picked_date' => $picked_date), array('match_id' => $match_id));
-					if (! $result)
-						throw new Exception('Error bij vastleggen van gekozen datum. - '.$this->db->_error_message());
+					if (! $form->validate())
+						throw new Exception('Het invoeren is mislukt, omdat niet alle velden goed zijn ingevuld.');
+			
+					// fetch teams details
+					$opponent_team = $form->opponent_team->isPosted() ? $form->opponent_team->getPosted() : $form->opponent_team_hidden->getPosted();
+					$this->fetch_teams($this->session->userdata('user_team_id'), $opponent_team);
 					
-					// create pleasant date format by using numeric array of days of the week that corresponds to date('w')
-					$days = array('zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag');
-					$picked_date_formatted = $days[date('w', strtotime($picked_date))].' '.date('d-m-Y', strtotime($picked_date));
+					// fetch players details
+					$this->fetch_players();
 					
-					/**
-					 * send e-mail to all 4 players
-					 */
-					$email_data = array(
-					            'pick_user_name' 	=> $this->session->userdata('user_name'),
-					            'picked_date'       => $picked_date_formatted,
-					            'teams'             => $this->teams,
-					            'comments'          => $this->comments,
-					            );
-					if ($_SERVER['SERVER_NAME'] == 'localhost') // working locally
+					// fetch match details
+					$this->fetch_match();
+					
+					// often used variables
+					$match_id = $this->match_details['match_id'];
+					$user_id  = $this->session->userdata('user_id');
+					
+					$this->fetch_comments($match_id);
+					
+					// as a business rule you can only pick a date when you already filled in your availability
+					if ($this->is_new_picked_date_posted($form->picked_date, $match_id)) 
 					{
-					    $email_data['name'] = 'Bas de Ruiter';
-					    $email_message = $this->load->view('match_picked_email', $email_data, true);
-					    
-					    echo '<div style="padding:30px; border:10px solid #888;">'.$email_message.'</div>'."\n";
+						// store the posted picked date.
+						$picked_date = $form->picked_date->getPosted();
+						$result = $this->db->update('matches', array('picked_date' => $picked_date), array('match_id' => $match_id));
+						if (! $result)
+							throw new Exception('Error bij vastleggen van gekozen datum. - '.$this->db->_error_message());
+						
+						// create pleasant date format by using numeric array of days of the week that corresponds to date('w')
+						$days = array('zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag');
+						$picked_date_formatted = $days[date('w', strtotime($picked_date))].' '.date('d-m-Y', strtotime($picked_date));
+						
+						/**
+						 * send e-mail to all 4 players
+						 */
+						$email_data = array(
+						            'pick_user_name' 	=> $this->session->userdata('user_name'),
+						            'picked_date'       => $picked_date_formatted,
+						            'teams'             => $this->teams,
+						            'comments'          => $this->comments,
+						            );
+						if ($_SERVER['SERVER_NAME'] == 'localhost') // working locally
+						{
+						    $email_data['name'] = 'Bas de Ruiter';
+						    $email_message = $this->load->view('match_picked_email', $email_data, true);
+						    
+						    echo '<div style="padding:30px; border:10px solid #888;">'.$email_message.'</div>'."\n";
+						}
+						else
+						{
+						    foreach ($this->players as $player)
+						    {
+						        $email_data['name'] = $player['name'];
+						        $email_message = $this->load->view('match_picked_email', $email_data, true);
+						        
+	    					    $this->email->initialize(array('mailtype' => 'html'));
+	    					    $this->email->from('klaverjascompetitie@fonteinkerkhaarlem.nl', 'Klaverjascompetitie');
+	    					    $this->email->to($player['email']);
+	    					    $this->email->subject('Datum geprikt voor klaverjaspartij: '.$picked_date_formatted);
+	    					    $this->email->message($email_message);
+	    					    if (! $this->email->send())
+	    					        throw new Exception('Error bij verzenden email geprikte datum bevestiging naar '.$player['name'].'.');
+						    }
+						}
+						
+						$data['feedback'] = success('De afspraak is vastgelegd op '.$picked_date_formatted.'. Een e-mail is verstuurd naar alle deelnemers.');
 					}
 					else
 					{
-					    foreach ($this->players as $player)
-					    {
-					        $email_data['name'] = $player['name'];
-					        $email_message = $this->load->view('match_picked_email', $email_data, true);
-					        
-    					    $this->email->initialize(array('mailtype' => 'html'));
-    					    $this->email->from('klaverjascompetitie@fonteinkerkhaarlem.nl', 'Klaverjascompetitie');
-    					    $this->email->to($player['email']);
-    					    $this->email->subject('Datum geprikt voor klaverjaspartij: '.$picked_date_formatted);
-    					    $this->email->message($email_message);
-    					    if (! $this->email->send())
-    					        throw new Exception('Error bij verzenden email geprikte datum bevestiging naar '.$player['name'].'.');
-					    }
+						/**
+						 * save user availability
+						 */
+						// delete old availability
+						$where = array('match_id' => $match_id, 'player_id' => $user_id);
+						$this->db->delete('match_planning', $where);
+						
+						// insert posted availability
+						$set = array();
+						foreach ($form->availabilities as $date => $input)
+						{
+							$set[] = array(
+									'match_id' => $match_id,
+									'player_id' => $user_id, // don't trust posted player_id. Always take the session's user.
+									'plan_date' => $date,
+									'availability' => $input->getPosted(),
+									);
+						}
+						$this->db->insert_batch('match_planning', $set);
+						if ($this->db->affected_rows() != 21)
+							throw new Exception('Error bij opslaan van beschikbaarheid. - '.$this->db->_error_message());
+						
+						$data['feedback'] = success('Bedankt! De beschikbaarheid is opgeslagen.');
 					}
 					
-					$data['feedback'] = success('De afspraak is vastgelegd op '.$picked_date_formatted.'. Een e-mail is verstuurd naar alle deelnemers.');
+					$data['match_id'] = $match_id;
 				}
-				else
+				catch (Exception $e)
 				{
-					/**
-					 * save user availability
-					 */
-					// delete old availability
-					$where = array('match_id' => $match_id, 'player_id' => $user_id);
-					$this->db->delete('match_planning', $where);
-					
-					// insert posted availability
-					$set = array();
-					foreach ($form->availabilities as $date => $input)
-					{
-						$set[] = array(
-								'match_id' => $match_id,
-								'player_id' => $user_id, // don't trust posted player_id. Always take the session's user.
-								'plan_date' => $date,
-								'availability' => $input->getPosted(),
-								);
-					}
-					$this->db->insert_batch('match_planning', $set);
-					if ($this->db->affected_rows() != 21)
-						throw new Exception('Error bij opslaan van beschikbaarheid. - '.$this->db->_error_message());
-					
-					$data['feedback'] = success('Bedankt! De beschikbaarheid is opgeslagen.');
+					$data['feedback'] = error($e->getMessage());
 				}
-				
-				$data['match_id'] = $match_id;
 			}
-			catch (Exception $e)
-			{
-				$data['feedback'] = error($e->getMessage());
-			}
+			
+			$data['form'] = $form;
 		}
-		 
-		
-		$data['form'] = $form;
 		
 		$this->load->view('headerView');
 		$this->load->view('planView', $data);

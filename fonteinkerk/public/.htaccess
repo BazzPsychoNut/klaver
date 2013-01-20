@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteRule ^(js|css|img)($|/) - [L]
+RewriteCond $1 !^(index\.php|images|robots\.txt|\.css|\.js)
+RewriteRule ^(.*)$ http://www.fonteinkerkhaarlem.nl/klaverjassen/index.php/$1 [L]

@@ -30,12 +30,12 @@
 				<table style="padding:0; margin:0; border:0;">
 					<tr>
 						<td>
-							<h1>Fonteinkerk Klaverjascompetitie</h1>
+							<h1 style="font-weight:normal; margin:1em 0 0.5em 0; color:#EE3322; font-size:190%;">Fonteinkerk Klaverjascompetitie</h1>
 						</td>
 					</tr>
 					<tr>
 						<td>	
-							<h2>Welkom</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Welkom</h2>
 							<br/>
 							<p>Beste <?php echo $name; ?>,</p>
 							<p>
@@ -50,13 +50,13 @@
 								<?php echo $activationLink; ?>
 							</p>
 							<p>
-								Je wachtwoord is Welkom01. Bij de eerste keer inloggen zul een eigen wachtwoord moeten opgeven.
+								Je wachtwoord is Welkom01. Bij de eerste keer inloggen zul je een eigen wachtwoord moeten opgeven.
 							</p>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<h2>Account Gegevens</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Account Gegevens</h2>
 						</td>
 					</tr>
 					<tr>
@@ -79,7 +79,7 @@
 					</tr>
 					<tr>
 						<td>
-							<h2>Team</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Team</h2>
 						</td>
 					</tr>
 					<tr>

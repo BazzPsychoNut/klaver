@@ -30,12 +30,12 @@
 				<table style="padding:0; margin:0; border:0;">
 					<tr>
 						<td>
-							<h1>Fonteinkerk Klaverjascompetitie</h1>
+							<h1 style="font-weight:normal; margin:1em 0 0.5em 0; color:#EE3322; font-size:190%;">Fonteinkerk Klaverjascompetitie</h1>
 						</td>
 					</tr>
 					<tr>
 						<td>	
-							<h2>Welkom</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Welkom</h2>
 							<br/>
 							<p>Beste <?php echo $name; ?>,</p>
 							<p>
@@ -48,7 +48,7 @@
 					</tr>
 					<tr>
 						<td>
-							<h2>Account Gegevens</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Account Gegevens</h2>
 						</td>
 					</tr>
 					<tr>
@@ -71,7 +71,7 @@
 					</tr>
 					<tr>
 						<td>
-							<h2>Team</h2>
+							<h2 style="font-weight:normal; margin:1em 0 0.5em 0; color:#003D4C; font-size:190%;">Team Gegevens</h2>
 						</td>
 					</tr>
 					<tr>
@@ -79,11 +79,11 @@
 							<table>
 								<tr>
 									<th>Teamnaam</th>
-									<td> <?php echo $teamName; ?></td>
+									<td> <?php echo empty($teamName) ? 'nog geen' : $teamName; ?></td>
 								</tr>
 								<tr>
 									<th>Je maat</th>
-									<td> <?php echo $maatName; ?></td>
+									<td> <?php echo empty($maatName) ? 'nog geen' : $maatName; ?></td>
 								</tr>
 							</table>
 						</td>

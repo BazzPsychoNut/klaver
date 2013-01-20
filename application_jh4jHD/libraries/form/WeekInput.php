@@ -31,8 +31,9 @@ class WeekInput extends Input
                     ->setSelected(date('Y'));
         
         // create array with week numbers from 01 to 53
-        $weeks = range(1,53);
-        array_walk($weeks, function(&$nr){$nr = str_pad($nr, 2, '0', STR_PAD_LEFT);});
+        $weeks = array();
+        for ($i=1; $i<=53; $i++)
+        	$weeks[] = str_pad($i, 2, '0', STR_PAD_LEFT);
     
         $this->week = new Dropdown($this->name.'-week');
         $this->week->setValues($weeks)
