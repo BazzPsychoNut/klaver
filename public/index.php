@@ -61,7 +61,10 @@ if (defined('ENVIRONMENT'))
  * as this file.
  *
  */
-$system_path = '../../private/klaver/system_SPBzB8';
+if (ENVIRONMENT == 'development')
+	$system_path = '../system_SPBzB8';
+else
+	$system_path = '../../private_html/klaver/system_SPBzB8';
 
 /*
  *---------------------------------------------------------------
@@ -77,7 +80,10 @@ $system_path = '../../private/klaver/system_SPBzB8';
  * NO TRAILING SLASH!
  *
  */
-$application_folder = '../../private/klaver/application_jh4jHD';
+if (ENVIRONMENT == 'development')
+	$application_folder = '../application_jh4jHD';
+else
+	$application_folder = '../../private_html/klaver/application_jh4jHD';
 	
 
 /*

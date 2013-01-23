@@ -21,6 +21,9 @@
 				<p>
 					De competitie is nog niet begonnen, dus <a href="<?php echo base_url(); ?>signup">schrijf je nu in</a>!
 				</p>
+				<p style="font-size:1.2em;">
+					Inschrijven kan tot en met <strong>zondag 10 februari</strong>!
+				</p>
 			</div>
 			<?php endif; ?>
 	
