@@ -51,6 +51,7 @@ table#players_overview td			{ padding:3px 10px; border-bottom:1px solid #ddd; }
 /* forms */
 label								{ float:left; width:150px; padding-top:5px; }
 input, select, textarea				{ float:left; padding:5px; margin:0 10px 2px 0; }
+input[type="radio"]					{ margin:2px 2px 2px 10px; }
 input[type="submit"], input[type="button"], div.error, div.success  { 
 	padding: 8px 20px;  
 	font-size: 110%; 
@@ -96,6 +97,9 @@ table#hands_input tr.row_spacer		{ border-top:20px solid white; }
 #plan_form_table tr					{ border-bottom:1px solid #ddd; }
 #plan_form_table tr.picked			{ background-color:#A8CEA8; border:2px solid green; }
 
+/* admin */
+#place_team_container #poule-container			{ margin-top:5px; }
+#place_team_container #poule-container label	{ width:auto; padding-top:0; }
 
 
 				
